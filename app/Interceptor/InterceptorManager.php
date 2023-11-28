@@ -3,9 +3,10 @@
 namespace App\Interceptor;
 
 use Illuminate\Support\Manager;
+use App\Interceptor\Channels\Channel;
 
 /**
- * @method \App\Interceptor\Interceptor driver(string $driver = null)
+ * @method \App\Interceptor\Channels\Channel driver(string $driver = null)
  */
 class InterceptorManager extends Manager
 {
@@ -19,7 +20,7 @@ class InterceptorManager extends Manager
         return $this->createInterceptorDriver(Channels\Mail::class);
     }
 
-    protected function createInterceptorDriver(string $class): Interceptor
+    protected function createInterceptorDriver(string $class): Channel
     {
         return new $class(
             filesystem: $this->container['filesystem']->disk(),

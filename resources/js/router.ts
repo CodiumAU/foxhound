@@ -8,8 +8,9 @@ export const router = createRouter({
   routes: [
     { path: '/', redirect: '/channels/mail' },
     {
-      path: '/channels/mail',
+      path: '/channels/mail/:uuid?',
       name: 'channels.mail',
+      props: true,
       component: ChannelsMail,
     },
     {

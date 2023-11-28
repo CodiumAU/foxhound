@@ -2,6 +2,7 @@
 
 namespace App\Listeners\NotificationSending;
 
+use Carbon\CarbonImmutable;
 use Illuminate\Support\Str;
 use App\Interceptor\Manifest;
 use App\Interceptor\InterceptorManager;
@@ -30,11 +31,13 @@ class InterceptNotification
         $manifest = new Manifest(
             uuid: Str::orderedUuid(),
             channel: $event->channel,
+            sentAt: CarbonImmutable::now(),
             event: $event,
         );
 
         // Create root directory.
-        $rootNotificationDirectory = "interceptor/{$manifest->uuid}";
+        $rootNotificationDirectory = $driver->relativePath("{$manifest->uuid}");
+
         $this->filesystem->makeDirectory($rootNotificationDirectory);
 
         $driver->intercept($event, $manifest);
