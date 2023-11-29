@@ -16,7 +16,7 @@
             isActive,
           'text-gray-400 dark:text-slate-500 bg-gray-50 dark:bg-gray-900/25':
             read && !isActive,
-          'text-slate-500 dark:text-slate-400 font-semibold hover:bg-gray-100 hover:dark:bg-gray-900/75':
+          'text-slate-600 dark:text-slate-400 font-semibold hover:bg-gray-100 hover:dark:bg-gray-900/75':
             unread && !isActive,
         }"
         @click="navigate"
