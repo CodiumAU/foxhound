@@ -19,18 +19,4 @@ class MessageSummaryData extends Data
         public CarbonImmutable $sentAt,
     ) {
     }
-
-    public static function fromMail(Manifest $manifest): self
-    {
-        return static::from([
-            'uuid' => $manifest->uuid,
-            'unread' => $manifest->unread,
-            'subject' => $manifest->data['subject'],
-            'recipients' => array_map(
-                callback: fn (array $data) => MessageRecipientData::from($data),
-                array: $manifest->data['to']
-            ),
-            'sentAt' => $manifest->sentAt,
-        ]);
-    }
 }

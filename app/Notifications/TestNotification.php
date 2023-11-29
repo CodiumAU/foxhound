@@ -7,6 +7,7 @@ use Illuminate\Mail\Attachment;
 use Illuminate\Notifications\Notification;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
+use Illuminate\Notifications\Messages\VonageMessage;
 
 class TestNotification extends Notification
 {
@@ -24,7 +25,12 @@ class TestNotification extends Notification
      */
     public function via(object $notifiable): array
     {
-        return ['mail'];
+        return ['mail', 'vonage'];
+    }
+
+    public function toVonage(object $notifiable): VonageMessage
+    {
+        return (new VonageMessage)->content('This is an example SMS which is really really long and will result in truncating.');
     }
 
     /**

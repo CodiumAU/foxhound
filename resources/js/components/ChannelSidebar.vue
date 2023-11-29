@@ -4,10 +4,10 @@
   >
     <nav class="p-3 pt-0 w-full flex flex-col">
       <ul class="space-y-1.5">
-        <PageSidebarItem
+        <ChannelSidebarItem
           v-for="message in messages"
           :key="message.uuid"
-          v-bind="{ message, route }"
+          v-bind="{ message, channel }"
         />
       </ul>
     </nav>
@@ -15,12 +15,14 @@
 </template>
 
 <script lang="ts" setup>
-import type { RouteLocationNamedRaw } from 'vue-router'
-import type { MessageListResource } from '../stores/channels-mail'
-import PageSidebarItem from './PageSidebarItem.vue'
+import { storeToRefs } from 'pinia'
+import { useChannelsStore } from '../stores/channels'
+import ChannelSidebarItem from './ChannelSidebarItem.vue'
 
 defineProps<{
-  messages: MessageListResource[]
-  route: RouteLocationNamedRaw
+  channel: string
 }>()
+
+const channelsStore = useChannelsStore()
+const { messages } = storeToRefs(channelsStore)
 </script>

@@ -20,6 +20,11 @@ class InterceptorManager extends Manager
         return $this->createInterceptorDriver(Channels\Mail::class);
     }
 
+    public function createVonageDriver(): Channels\Vonage
+    {
+        return $this->createInterceptorDriver(Channels\Vonage::class);
+    }
+
     protected function createInterceptorDriver(string $class): Channel
     {
         return new $class(

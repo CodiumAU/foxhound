@@ -15,14 +15,17 @@
     <nav class="p-6 w-full flex flex-col flex-wrap">
       <ul class="space-y-1.5">
         <li class="text-base text-slate-300 pb-2 font-semibold">Channels</li>
-        <AppSidebarItem :to="{ name: 'channels.mail' }" :icon="EnvelopeIcon">
+        <AppSidebarItem
+          :to="{ name: 'channels.single', params: { channel: 'mail' } }"
+          :icon="EnvelopeIcon"
+        >
           Mail
         </AppSidebarItem>
         <AppSidebarItem
-          :to="{ name: 'channels.sms' }"
+          :to="{ name: 'channels.single', params: { channel: 'vonage' } }"
           :icon="DevicePhoneMobileIcon"
         >
-          SMS
+          Vonage
         </AppSidebarItem>
       </ul>
     </nav>

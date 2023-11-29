@@ -5,9 +5,10 @@ namespace App\Interceptor\Channels;
 use RuntimeException;
 use Illuminate\Support\Str;
 use App\Interceptor\Manifest;
+use Illuminate\Http\Response;
 use Illuminate\Mail\Mailable;
-use App\Interceptor\Interceptor;
-use Illuminate\Contracts\Support\Renderable;
+use App\Data\MessageSummaryData;
+use App\Data\MessageRecipientData;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Events\NotificationSending;
 
@@ -76,11 +77,18 @@ class Mail extends Channel
         return "{$this->rootStorageDirectory}/mail/{$path}";
     }
 
-    public function path(string $path = null): string
+    public function newMessageSummaryData(Manifest $manifest): MessageSummaryData
     {
-        return $this->filesystem->path(
-            $this->relativePath($path)
-        );
+        return MessageSummaryData::from([
+            'uuid' => $manifest->uuid,
+            'unread' => $manifest->unread,
+            'subject' => $manifest->data['subject'],
+            'recipients' => array_map(
+                callback: fn (array $data) => MessageRecipientData::from($data),
+                array: $manifest->data['to']
+            ),
+            'sentAt' => $manifest->sentAt,
+        ]);
     }
 
     protected function to(NotificationSending $event, Mailable | MailMessage $mail): array
@@ -92,5 +100,12 @@ class Mail extends Channel
         return [
             ['name' => null, 'address' => $event->notifiable->routeNotificationFor('mail')]
         ];
+    }
+
+    public function response(Manifest $manifest): Response
+    {
+        return response($this->filesystem->get($this->relativePath("{$manifest->uuid}/index.html")), 200, [
+            'Content-Type' => 'text/html',
+        ]);
     }
 }

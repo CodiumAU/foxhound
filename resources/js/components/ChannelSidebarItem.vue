@@ -1,5 +1,12 @@
 <template>
-  <RouterLink v-slot="{ isActive, navigate, href }" custom v-bind="{ to }">
+  <RouterLink
+    v-slot="{ isActive, navigate, href }"
+    custom
+    :to="{
+      name: 'channels.single',
+      params: { channel, uuid: props.message.uuid },
+    }"
+  >
     <li class="grow-0">
       <a
         v-bind="{ href }"
@@ -38,21 +45,15 @@
 import { computed, onMounted, ref } from 'vue'
 import type { MessageListResource } from '../stores/channels-mail'
 import { parseISO, formatDistanceToNowStrict } from 'date-fns'
-import type { RouteLocationNamedRaw } from 'vue-router'
 
 const props = defineProps<{
   message: MessageListResource
-  route: RouteLocationNamedRaw
+  channel: string
 }>()
 
 const unread = computed(() => props.message.unread)
 const read = computed(() => !unread.value)
 const sentAt = ref(parseSentAt())
-
-const to = computed(() => ({
-  ...props.route,
-  params: { uuid: props.message.uuid },
-}))
 
 function parseSentAt() {
   return formatDistanceToNowStrict(parseISO(props.message.sent_at), {
