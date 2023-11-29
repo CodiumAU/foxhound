@@ -4,7 +4,7 @@ namespace App\Data;
 
 use Carbon\CarbonImmutable;
 use Spatie\LaravelData\Data;
-use App\Interceptor\Manifest;
+use App\Foxhound\Manifest;
 use Spatie\LaravelData\DataCollection;
 use Spatie\LaravelData\Attributes\DataCollectionOf;
 

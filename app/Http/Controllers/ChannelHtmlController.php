@@ -2,11 +2,11 @@
 
 namespace App\Http\Controllers;
 
-use App\Interceptor\InterceptorManager;
+use App\Foxhound\ChannelManager;
 
 class ChannelHtmlController extends Controller
 {
-    public function __invoke(InterceptorManager $manager, string $channel, string $uuid): mixed
+    public function __invoke(ChannelManager $manager, string $channel, string $uuid): mixed
     {
         $driver = $manager->driver($channel);
 

@@ -5,10 +5,10 @@
   >
     <div class="px-6">
       <a
-        class="flex-none text-xl font-semibold text-slate-300 focus:outline-none focus:ring-1 focus:ring-gray-600"
+        class="flex-none text-2xl font-semibold text-slate-300 focus:outline-none focus:ring-1 focus:ring-gray-600 font-serif"
         aria-label="Brand"
       >
-        Interceptor
+        foxhound
       </a>
     </div>
 

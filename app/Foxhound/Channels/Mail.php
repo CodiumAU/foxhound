@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Interceptor\Channels;
+namespace App\Foxhound\Channels;
 
 use RuntimeException;
 use Illuminate\Support\Str;
-use App\Interceptor\Manifest;
+use App\Foxhound\Manifest;
 use Illuminate\Http\Response;
 use Illuminate\Mail\Mailable;
 use App\Data\MessageSummaryData;

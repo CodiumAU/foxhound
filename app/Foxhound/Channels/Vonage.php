@@ -1,9 +1,9 @@
 <?php
 
-namespace App\Interceptor\Channels;
+namespace App\Foxhound\Channels;
 
 use RuntimeException;
-use App\Interceptor\Manifest;
+use App\Foxhound\Manifest;
 use Illuminate\Http\Response;
 use App\Data\MessageSummaryData;
 use App\Data\MessageRecipientData;

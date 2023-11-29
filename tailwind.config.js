@@ -13,6 +13,7 @@ export default {
   theme: {
     fontFamily: {
       sans: ['Rubik', 'sans-serif'],
+      serif: ['Hedvig Letters Serif', 'serif'],
     },
   },
   plugins: [forms, preline],

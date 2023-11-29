@@ -4,7 +4,7 @@ namespace App\Providers;
 
 use Illuminate\Support\ServiceProvider;
 
-class InterceptorServiceProvider extends ServiceProvider
+class FoxhoundServiceProvider extends ServiceProvider
 {
     /**
      * Register services.
@@ -22,7 +22,7 @@ class InterceptorServiceProvider extends ServiceProvider
     public function boot(): void
     {
         $this->publishes([
-            INTERCEPTOR_PATH.'/public' => public_path('vendor/interceptor'),
-        ], ['interceptor-assets']);
+            INTERCEPTOR_PATH.'/public' => public_path('vendor/foxhound'),
+        ], ['foxhound-assets']);
     }
 }

@@ -1,8 +1,8 @@
 <?php
 
-namespace App\Interceptor\Channels;
+namespace App\Foxhound\Channels;
 
-use App\Interceptor\Manifest;
+use App\Foxhound\Manifest;
 use Illuminate\Http\Response;
 use App\Data\MessageSummaryData;
 use Illuminate\Contracts\Filesystem\Filesystem;
@@ -12,7 +12,7 @@ abstract class Channel
 {
     public function __construct(
         protected Filesystem $filesystem,
-        protected string $rootStorageDirectory = 'interceptor'
+        protected string $rootStorageDirectory = 'foxhound'
     ) {
     }
 

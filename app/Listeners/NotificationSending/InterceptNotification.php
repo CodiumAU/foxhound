@@ -4,9 +4,9 @@ namespace App\Listeners\NotificationSending;
 
 use Carbon\CarbonImmutable;
 use Illuminate\Support\Str;
-use App\Interceptor\Manifest;
+use App\Foxhound\Manifest;
 use InvalidArgumentException;
-use App\Interceptor\InterceptorManager;
+use App\Foxhound\ChannelManager;
 use Illuminate\Contracts\Filesystem\Filesystem;
 use Illuminate\Notifications\Events\NotificationSending;
 
@@ -16,7 +16,7 @@ class InterceptNotification
      * Create the event listener.
      */
     public function __construct(
-        protected InterceptorManager $manager,
+        protected ChannelManager $manager,
         protected Filesystem $filesystem
     ) {
     }

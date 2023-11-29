@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Interceptor;
+namespace App\Foxhound;
 
 use JsonSerializable;
 use Carbon\CarbonImmutable;

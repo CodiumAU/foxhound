@@ -17,11 +17,11 @@
         </AppHeaderButton>
 
         <a
-          class="flex-none text-xl font-semibold dark:text-white"
+          class="flex-none text-2xl font-serif font-semibold dark:text-white"
           href="#"
           aria-label="Brand"
         >
-          Interceptor
+          foxhound
         </a>
       </div>
 

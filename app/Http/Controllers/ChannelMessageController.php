@@ -3,12 +3,12 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Filesystem\Filesystem;
-use App\Interceptor\InterceptorManager;
+use App\Foxhound\ChannelManager;
 use App\Http\Resources\MessageListResource;
 
 class ChannelMessageController extends Controller
 {
-    public function index(InterceptorManager $manager, Filesystem $filesystem, string $channel)
+    public function index(ChannelManager $manager, Filesystem $filesystem, string $channel)
     {
         $driver = $manager->driver($channel);
 
