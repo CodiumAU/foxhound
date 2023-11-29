@@ -50,9 +50,9 @@ class Test extends Mailable
     public function attachments(): array
     {
         return [
-            Attachment::fromPath(storage_path('app/test.txt'))->as('foo.txt'),
-            Attachment::fromStorageDisk('local', 'test23.txt')->as('bar.txt'),
-            Attachment::fromData(fn () => 'hello world', 'hello.txt')->as('bob.txt'),
+            // Attachment::fromPath(storage_path('app/test.txt'))->as('foo.txt'),
+            // Attachment::fromStorageDisk('local', 'test23.txt')->as('bar.txt'),
+            // Attachment::fromData(fn () => 'hello world', 'hello.txt')->as('bob.txt'),
         ];
     }
 }

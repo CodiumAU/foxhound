@@ -21,9 +21,14 @@ import PageContainer from '../components/PageContainer.vue'
 import { http } from '../http'
 import { computed, watch } from 'vue'
 
-const props = defineProps<{
-  uuid?: string
-}>()
+const props = withDefaults(
+  defineProps<{
+    uuid?: string
+  }>(),
+  {
+    uuid: undefined,
+  }
+)
 
 const channelsMailStore = useChannelsMailStore()
 const { messages } = storeToRefs(channelsMailStore)
@@ -31,7 +36,7 @@ const { messages } = storeToRefs(channelsMailStore)
 await channelsMailStore.getMailMessages()
 
 const iframeSource = computed(() => {
-  if (props.uuid === undefined) {
+  if (props.uuid === undefined || props.uuid === '') {
     return null
   }
 

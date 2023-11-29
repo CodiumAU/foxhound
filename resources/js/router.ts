@@ -3,7 +3,6 @@ import ChannelsMail from './pages/ChannelsMail.vue'
 import ChannelsSms from './pages/ChannelsSms.vue'
 
 export const router = createRouter({
-  // 4. Provide the history implementation to use. We are using the hash history for simplicity here.
   history: createWebHistory(),
   routes: [
     { path: '/', redirect: '/channels/mail' },

@@ -24,7 +24,7 @@ class Manifest implements JsonSerializable, Arrayable
         return $this->toArray();
     }
 
-    public function read(): self
+    public function markAsRead(): self
     {
         $this->unread = false;
 

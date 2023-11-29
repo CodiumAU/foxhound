@@ -27,7 +27,7 @@
               &lt;{{ recipient.address }}&gt;
             </template>
           </span>
-          <span class="ms-auto shrink-0">{{ sentAt }} ago</span>
+          <span class="ms-auto shrink-0">{{ sentAt }}</span>
         </div>
       </a>
     </li>
@@ -35,9 +35,9 @@
 </template>
 
 <script lang="ts" setup>
-import { computed } from 'vue'
+import { computed, onMounted, ref } from 'vue'
 import type { MessageListResource } from '../stores/channels-mail'
-import { parseISO, intervalToDuration, formatDuration } from 'date-fns'
+import { parseISO, formatDistanceToNowStrict } from 'date-fns'
 import type { RouteLocationNamedRaw } from 'vue-router'
 
 const props = defineProps<{
@@ -47,21 +47,22 @@ const props = defineProps<{
 
 const unread = computed(() => props.message.unread)
 const read = computed(() => !unread.value)
+const sentAt = ref(parseSentAt())
 
 const to = computed(() => ({
   ...props.route,
   params: { uuid: props.message.uuid },
 }))
 
-const sentAt = computed(() =>
-  formatDuration(
-    intervalToDuration({
-      start: parseISO(props.message.sent_at),
-      end: new Date(),
-    }),
-    {
-      format: ['years', 'months', 'weeks', 'days', 'hours', 'minutes'],
-    }
-  )
-)
+function parseSentAt() {
+  return formatDistanceToNowStrict(parseISO(props.message.sent_at), {
+    addSuffix: true,
+  })
+}
+
+onMounted(() => {
+  setInterval(() => {
+    sentAt.value = parseSentAt()
+  }, 1000 * 60)
+})
 </script>

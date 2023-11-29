@@ -28,24 +28,15 @@ class InterceptNotification
         $driver = $this->manager->driver($event->channel);
 
         // Create manifest.
-        $manifest = new Manifest(
+        $manifest = $driver->make(new Manifest(
             uuid: Str::orderedUuid(),
             channel: $event->channel,
             sentAt: CarbonImmutable::now(),
             event: $event,
-        );
-
-        // Create root directory.
-        $rootNotificationDirectory = $driver->relativePath("{$manifest->uuid}");
-
-        $this->filesystem->makeDirectory($rootNotificationDirectory);
+        ));
 
         $driver->intercept($event, $manifest);
 
-        // Store manifest file.
-        $this->filesystem->put(
-            "{$rootNotificationDirectory}/manifest.json",
-            json_encode($manifest),
-        );
+        $driver->save($manifest);
     }
 }

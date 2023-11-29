@@ -14,6 +14,28 @@ abstract class Channel
     ) {
     }
 
+    public function manifest(string $uuid): Manifest
+    {
+        return Manifest::parse($this->filesystem->get("{$this->relativePath($uuid)}/manifest.json"));
+    }
+
+    public function make(Manifest $manifest): Manifest
+    {
+        $this->filesystem->makeDirectory(
+            $this->relativePath($manifest->uuid)
+        );
+
+        return $manifest;
+    }
+
+    public function save(Manifest $manifest): void
+    {
+        $this->filesystem->put(
+            "{$this->relativePath($manifest->uuid)}/manifest.json",
+            json_encode($manifest),
+        );
+    }
+
     abstract public function intercept(NotificationSending $event, Manifest $manifest): void;
 
     abstract public function path(string $path = null): string;
