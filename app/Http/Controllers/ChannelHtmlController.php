@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use Exception;
 use App\Foxhound\ChannelManager;
 
 class ChannelHtmlController extends Controller
@@ -10,11 +11,15 @@ class ChannelHtmlController extends Controller
     {
         $driver = $manager->driver($channel);
 
-        $manifest = $driver->manifest($uuid);
-        $manifest->markAsRead();
+        try {
+            $manifest = $driver->manifest($uuid);
+            $manifest->markAsRead();
 
-        $driver->save($manifest);
+            $driver->save($manifest);
 
-        return $driver->response($manifest);
+            return $driver->response($manifest);
+        } catch (Exception) {
+            return view('404');
+        }
     }
 }

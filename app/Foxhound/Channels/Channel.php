@@ -2,6 +2,7 @@
 
 namespace App\Foxhound\Channels;
 
+use RuntimeException;
 use App\Foxhound\Manifest;
 use Illuminate\Http\Response;
 use App\Data\MessageSummaryData;
@@ -18,7 +19,13 @@ abstract class Channel
 
     public function manifest(string $uuid): Manifest
     {
-        return Manifest::parse($this->filesystem->get("{$this->relativePath($uuid)}/manifest.json"));
+        $path = $this->relativePath("{$uuid}/manifest.json");
+
+        if ($this->filesystem->exists($path)) {
+            return Manifest::parse($this->filesystem->get($path));
+        }
+
+        throw new RuntimeException("Manifest not found for {$uuid}.");
     }
 
     public function make(Manifest $manifest): Manifest
