@@ -2,9 +2,12 @@
   <ChannelSidebar v-bind="{ channel }" />
 
   <PageContainer>
-    <template v-if="uuid === undefined || uuid === ''">
-      Select a message.
-    </template>
+    <div
+      v-if="uuid === undefined || uuid === ''"
+      class="flex items-center justify-center h-full text-2xl font-light text-gray-500 dark:text-slate-400"
+    >
+      Select a message to view.
+    </div>
     <template v-else-if="iframeSource">
       <div
         class="rounded-lg h-full w-full border border-gray-200 dark:border-gray-700 bg-white overflow-hidden"
