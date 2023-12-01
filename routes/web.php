@@ -18,7 +18,7 @@ use App\Notifications\TestMailableNotification;
 */
 
 Route::get('/test', function () {
-    Storage::disk('local')->deleteDirectory('interceptor');
+    Storage::disk('local')->deleteDirectory('foxhound');
     User::find(1)->notify(new TestNotification('test'));
     User::find(1)->notify(new TestMailableNotification('test'));
     Notification::route('mail', 'foo@bar.com')->notify(new TestNotification('blah'));
