@@ -3,7 +3,9 @@
 namespace App\Foxhound\Channels;
 
 use RuntimeException;
+use App\Data\ChannelData;
 use App\Foxhound\Manifest;
+use App\Foxhound\ChannelType;
 use Illuminate\Http\Response;
 use App\Data\MessageSummaryData;
 use App\Data\MessageRecipientData;
@@ -47,5 +49,13 @@ class Vonage extends Channel
         return response(
             view('sms', ['message' => $manifest->data['message']])
         );
+    }
+    public function data(): ChannelData
+    {
+        return ChannelData::from([
+            'key' => 'vonage',
+            'name' => 'Vonage',
+            'type' => ChannelType::Sms
+        ]);
     }
 }

@@ -2,13 +2,14 @@
 
 namespace App\Listeners\NotificationSending;
 
+use App\Foxhound\Manifest;
 use Carbon\CarbonImmutable;
 use Illuminate\Support\Str;
-use App\Foxhound\Manifest;
 use InvalidArgumentException;
 use App\Foxhound\ChannelManager;
 use Illuminate\Contracts\Filesystem\Filesystem;
 use Illuminate\Notifications\Events\NotificationSending;
+use Illuminate\Contracts\Config\Repository as ConfigRepository;
 
 class InterceptNotification
 {
@@ -17,6 +18,7 @@ class InterceptNotification
      */
     public function __construct(
         protected ChannelManager $manager,
+        protected ConfigRepository $config,
         protected Filesystem $filesystem
     ) {
     }
@@ -26,6 +28,10 @@ class InterceptNotification
      */
     public function handle(NotificationSending $event): bool
     {
+        if (!in_array($event->channel, $this->config->get('foxhound.channels', []))) {
+            return true;
+        }
+
         try {
             $driver = $this->manager->driver($event->channel);
 

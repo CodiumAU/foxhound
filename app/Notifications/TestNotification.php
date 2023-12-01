@@ -43,8 +43,8 @@ class TestNotification extends Notification
             ->cc('foo@bar.com')
             ->line('The introduction to the notification.')
             ->action('Notification Action', url('/'))
-            ->line('Thank you for using our application!')
-            ->attach(storage_path('app/testing.txt'))
-            ->attach(Attachment::fromStorageDisk('local', 'costings.pdf'));
+            ->line('Thank you for using our application!');
+            // ->attach(storage_path('app/testing.txt'))
+            // ->attach(Attachment::fromStorageDisk('local', 'costings.pdf'));
     }
 }

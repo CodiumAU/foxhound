@@ -3,7 +3,9 @@
 namespace App\Foxhound\Channels;
 
 use RuntimeException;
+use App\Data\ChannelData;
 use App\Foxhound\Manifest;
+use App\Foxhound\ChannelType;
 use Illuminate\Http\Response;
 use App\Data\MessageSummaryData;
 use Illuminate\Contracts\Filesystem\Filesystem;
@@ -59,4 +61,6 @@ abstract class Channel
     abstract public function relativePath(string $path = null): string;
 
     abstract public function response(Manifest $manifest): Response;
+
+    abstract public function data(): ChannelData;
 }

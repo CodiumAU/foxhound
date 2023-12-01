@@ -15,24 +15,23 @@
     <nav class="p-6 w-full flex flex-col flex-wrap">
       <ul class="space-y-1.5">
         <li class="text-base text-slate-300 pb-2 font-semibold">Channels</li>
-        <AppSidebarItem
-          :to="{ name: 'channels.single', params: { channel: 'mail' } }"
-          :icon="EnvelopeIcon"
-        >
-          Mail
-        </AppSidebarItem>
-        <AppSidebarItem
-          :to="{ name: 'channels.single', params: { channel: 'vonage' } }"
-          :icon="DevicePhoneMobileIcon"
-        >
-          Vonage
-        </AppSidebarItem>
+        <AppSidebarChannelItem
+          v-for="channel in channels"
+          :key="channel.key"
+          v-bind="{ channel }"
+        />
       </ul>
     </nav>
   </div>
 </template>
 
 <script lang="ts" setup>
-import AppSidebarItem from './AppSidebarItem.vue'
-import { EnvelopeIcon, DevicePhoneMobileIcon } from '@heroicons/vue/24/solid'
+import { useChannelsStore } from '../stores/channels'
+import { storeToRefs } from 'pinia'
+import AppSidebarChannelItem from './AppSidebarChannelItem.vue'
+
+const channelsStore = useChannelsStore()
+const { channels } = storeToRefs(channelsStore)
+
+await channelsStore.getChannels()
 </script>

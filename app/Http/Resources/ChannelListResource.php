@@ -14,6 +14,10 @@ class ChannelListResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
-        return parent::toArray($request);
+        return [
+            'key' => $this->key,
+            'name' => $this->name,
+            'type' => $this->type,
+        ];
     }
 }

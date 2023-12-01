@@ -3,8 +3,10 @@
 namespace App\Foxhound\Channels;
 
 use RuntimeException;
-use Illuminate\Support\Str;
+use App\Data\ChannelData;
 use App\Foxhound\Manifest;
+use Illuminate\Support\Str;
+use App\Foxhound\ChannelType;
 use Illuminate\Http\Response;
 use Illuminate\Mail\Mailable;
 use App\Data\MessageSummaryData;
@@ -106,6 +108,15 @@ class Mail extends Channel
     {
         return response($this->filesystem->get($this->relativePath("{$manifest->uuid}/index.html")), 200, [
             'Content-Type' => 'text/html',
+        ]);
+    }
+
+    public function data(): ChannelData
+    {
+        return ChannelData::from([
+            'key' => 'mail',
+            'name' => 'Mail',
+            'type' => ChannelType::Mail
         ]);
     }
 }

@@ -3,9 +3,18 @@ import { http } from '../http'
 import { ref } from 'vue'
 
 export const useChannelsStore = defineStore('channels', () => {
+  const channels = ref<ChannelListResource[]>([])
   const messages = ref<MessageListResource[]>([])
 
-  async function getMessages(channel: string) {
+  async function getChannels() {
+    const response = await http.get<{ data: ChannelListResource[] }>(
+      '/channels'
+    )
+
+    channels.value = response.data.data
+  }
+
+  async function getMessages(channel: ChannelType) {
     const response = await http.get<{ data: MessageListResource[] }>(
       `/channels/${channel}/messages`
     )
@@ -15,9 +24,22 @@ export const useChannelsStore = defineStore('channels', () => {
 
   return {
     messages,
+    channels,
     getMessages,
+    getChannels,
   }
 })
+
+export enum ChannelType {
+  Mail = 'mail',
+  Sms = 'sms',
+}
+
+export type ChannelListResource = {
+  key: string
+  name: string
+  type: ChannelType
+}
 
 export type MessageListResource = {
   uuid: string

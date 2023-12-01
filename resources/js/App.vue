@@ -1,6 +1,9 @@
 <template>
   <AppHeader />
-  <AppSidebar />
+
+  <Suspense>
+    <AppSidebar />
+  </Suspense>
 
   <div class="w-full h-full min-h-full lg:ps-64 flex flex-1">
     <Suspense>
