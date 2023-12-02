@@ -20,7 +20,7 @@
 
 <script lang="ts" setup>
 import { storeToRefs } from 'pinia'
-import { useChannelsStore } from '../stores/channels'
+import { type ChannelType, useChannelsStore } from '../stores/channels'
 import { http } from '../http'
 import { computed, watch } from 'vue'
 import ChannelSidebar from '../components/ChannelSidebar.vue'
@@ -28,7 +28,7 @@ import PageContainer from '../components/PageContainer.vue'
 
 const props = withDefaults(
   defineProps<{
-    channel: string
+    channel: ChannelType
     uuid?: string
   }>(),
   {

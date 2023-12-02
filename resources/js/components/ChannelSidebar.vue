@@ -9,26 +9,71 @@
       >
         There are no messages for this channel.
       </div>
-      <ul class="space-y-1.5">
-        <ChannelSidebarItem
-          v-for="message in messages"
-          :key="message.uuid"
-          v-bind="{ message, channel }"
-        />
-      </ul>
+
+      <template v-else>
+        <div class="flex flex-row justify-end">
+          <DropdownMenu id="settings">
+            <template #button="{ id }">
+              <IconButton v-bind="{ id }">
+                <Cog6ToothIcon class="w-5 h-5" />
+              </IconButton>
+            </template>
+
+            <DropdownMenuItem tag="button" danger @click="clearMessages">
+              Clear Messages
+            </DropdownMenuItem>
+          </DropdownMenu>
+        </div>
+        <ul class="space-y-1.5 mt-3">
+          <ChannelSidebarItem
+            v-for="message in messages"
+            :key="message.uuid"
+            v-bind="{ message, channel }"
+          />
+        </ul>
+      </template>
     </nav>
   </div>
 </template>
 
 <script lang="ts" setup>
 import { storeToRefs } from 'pinia'
-import { useChannelsStore } from '../stores/channels'
+import { useChannelsStore, type ChannelType } from '../stores/channels'
+import { Cog6ToothIcon } from '@heroicons/vue/24/outline'
+import { useAlert } from '../composables/use-alert'
+import { useRouter } from 'vue-router'
 import ChannelSidebarItem from './ChannelSidebarItem.vue'
+import DropdownMenu from './DropdownMenu.vue'
+import DropdownMenuItem from './DropdownMenuItem.vue'
+import IconButton from './IconButton.vue'
 
-defineProps<{
-  channel: string
+const props = defineProps<{
+  channel: ChannelType
 }>()
 
+const router = useRouter()
 const channelsStore = useChannelsStore()
 const { messages } = storeToRefs(channelsStore)
+
+async function clearMessages() {
+  if (
+    !(await useAlert({
+      danger: true,
+      title: 'Clear Messages',
+      message: 'Are you sure you want to clear all messages?',
+      confirmButton: 'Clear',
+    }))
+  ) {
+    return
+  }
+
+  await channelsStore.clearMessages(props.channel)
+
+  router.replace({
+    name: 'channels.single',
+    params: {
+      channel: props.channel,
+    },
+  })
+}
 </script>

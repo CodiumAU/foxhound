@@ -22,10 +22,17 @@ export const useChannelsStore = defineStore('channels', () => {
     messages.value = response.data.data
   }
 
+  async function clearMessages(channel: ChannelType) {
+    await http.delete(`/channels/${channel}/messages`)
+
+    messages.value = []
+  }
+
   return {
     messages,
-    channels,
     getMessages,
+    clearMessages,
+    channels,
     getChannels,
   }
 })

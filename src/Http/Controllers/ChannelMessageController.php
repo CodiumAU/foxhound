@@ -5,6 +5,8 @@ namespace Foxhound\Http\Controllers;
 use Foxhound\ChannelManager;
 use Illuminate\Routing\Controller;
 use Illuminate\Filesystem\Filesystem;
+use Illuminate\Support\Facades\Response;
+use Illuminate\Http\Response as HttpResponse;
 use Foxhound\Http\Resources\MessageListResource;
 
 class ChannelMessageController extends Controller
@@ -24,5 +26,14 @@ class ChannelMessageController extends Controller
         krsort($messages, SORT_STRING);
 
         return MessageListResource::collection(array_values($messages));
+    }
+
+    public function destroy(ChannelManager $manager, Filesystem $filesystem, string $channel): HttpResponse
+    {
+        $driver = $manager->driver($channel);
+
+        $filesystem->deleteDirectory($driver->path());
+
+        return Response::noContent();
     }
 }
