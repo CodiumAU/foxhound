@@ -52,7 +52,7 @@ export type MessageListResource = {
   uuid: string
   unread: boolean
   has_attachments: boolean
-  subject: string | null
+  subject: string
   recipients: {
     name: string | null
     address: string

@@ -39,7 +39,7 @@ class Mail extends Channel
             $mail->render(),
         );
 
-        $manifest->data('subject', $mail->subject);
+        $manifest->data('subject', $this->subject($event, $mail));
         $manifest->data('from', $this->from($event, $mail));
         $manifest->data('replyTo', $this->replyTo($event, $mail));
         $manifest->data('to', $this->to($event, $mail));
@@ -106,6 +106,15 @@ class Mail extends Channel
                 'attachments' => $this->attachments($manifest),
             ])
         ]);
+    }
+
+    protected function subject(NotificationSending $event, Mailable | MailMessage $mail): string
+    {
+        if (isset($mail->subject)) {
+            return $mail->subject;
+        }
+
+        return Str::headline(class_basename($event->notification));
     }
 
     protected function to(NotificationSending $event, Mailable | MailMessage $mail): array

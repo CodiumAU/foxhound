@@ -13,7 +13,7 @@ class MessageSummaryData extends Data
         public string $uuid,
         public bool $unread,
         public bool $hasAttachments,
-        public ?string $subject,
+        public string $subject,
         #[DataCollectionOf(MessageRecipientData::class)]
         public DataCollection $recipients,
         public CarbonImmutable $sentAt,
