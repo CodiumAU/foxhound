@@ -58,4 +58,5 @@ export type MessageListResource = {
     address: string
   }[]
   sent_at: string
+  data: Record<string, any>
 }

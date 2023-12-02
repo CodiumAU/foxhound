@@ -49,7 +49,7 @@
 import { computed, onMounted, ref } from 'vue'
 import type { MessageListResource } from '../stores/channels'
 import { parseISO, formatDistanceToNowStrict } from 'date-fns'
-import { PaperClipIcon, PlusIcon } from '@heroicons/vue/20/solid'
+import { PaperClipIcon } from '@heroicons/vue/20/solid'
 
 const props = defineProps<{
   message: MessageListResource

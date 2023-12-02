@@ -17,6 +17,7 @@ class MessageSummaryData extends Data
         #[DataCollectionOf(MessageRecipientData::class)]
         public DataCollection $recipients,
         public CarbonImmutable $sentAt,
+        public mixed $data,
     ) {
     }
 }

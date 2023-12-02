@@ -24,6 +24,7 @@ class MessageListResource extends JsonResource
             'subject' => $this->subject,
             'recipients' => $this->recipients->toArray(),
             'sent_at' => $this->sentAt->toIso8601String(),
+            'data' => $this->data,
         ];
     }
 }

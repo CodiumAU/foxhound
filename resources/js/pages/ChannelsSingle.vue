@@ -8,7 +8,9 @@
     >
       Select a message to view.
     </div>
-    <template v-else-if="iframeSource">
+    <template v-else-if="message !== undefined && iframeSource">
+      <Component :is="headerComponent" v-bind="{ message }" />
+
       <div
         class="rounded-lg h-full w-full border border-gray-200 dark:border-gray-700 bg-white overflow-hidden"
       >
@@ -20,11 +22,13 @@
 
 <script lang="ts" setup>
 import { storeToRefs } from 'pinia'
-import { type ChannelType, useChannelsStore } from '../stores/channels'
+import { ChannelType, useChannelsStore } from '../stores/channels'
 import { http } from '../http'
 import { computed, watch } from 'vue'
 import ChannelSidebar from '../components/ChannelSidebar.vue'
 import PageContainer from '../components/PageContainer.vue'
+import ChannelHeaderMail from '../components/ChannelHeaderMail.vue'
+import ChannelHeaderSms from '../components/ChannelHeaderSms.vue'
 
 const props = withDefaults(
   defineProps<{
@@ -43,10 +47,17 @@ watch(
   () => props.channel,
   async () => {
     await channelsStore.getMessages(props.channel)
+
+    markMessageAsRead(props.uuid)
   },
   { immediate: true }
 )
 
+watch(() => props.uuid, markMessageAsRead)
+
+const message = computed(() =>
+  messages.value.find((message) => message.uuid === props.uuid)
+)
 const iframeSource = computed(() => {
   if (props.uuid === undefined || props.uuid === '') {
     return null
@@ -55,20 +66,27 @@ const iframeSource = computed(() => {
   return http.getUri({ url: `/channels/${props.channel}/${props.uuid}/html` })
 })
 
-watch(
-  () => props.uuid,
-  (uuid) => {
-    const message = messages.value.find((message) => message.uuid === uuid)
+const headerComponent = computed(() => {
+  switch (props.channel) {
+    case ChannelType.Mail:
+      return ChannelHeaderMail
+    case ChannelType.Sms:
+      return ChannelHeaderSms
+    default:
+      return null
+  }
+})
 
-    if (message === undefined) {
-      return
-    }
+function markMessageAsRead(uuid?: string) {
+  const message = messages.value.find((message) => message.uuid === uuid)
 
-    messages.value.splice(messages.value.indexOf(message), 1, {
-      ...message,
-      unread: false,
-    })
-  },
-  { immediate: true }
-)
+  if (message === undefined) {
+    return
+  }
+
+  messages.value.splice(messages.value.indexOf(message), 1, {
+    ...message,
+    unread: false,
+  })
+}
 </script>

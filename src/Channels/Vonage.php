@@ -7,6 +7,7 @@ use Foxhound\Manifest;
 use Foxhound\ChannelType;
 use Illuminate\Http\Response;
 use Foxhound\Data\ChannelData;
+use Foxhound\Data\SmsMessageData;
 use Foxhound\Data\MessageSummaryData;
 use Foxhound\Data\MessageRecipientData;
 use Illuminate\Notifications\Events\NotificationSending;
@@ -25,11 +26,6 @@ class Vonage extends Channel
         $manifest->data('from', $message->from);
     }
 
-    public function relativePath(string $path = null): string
-    {
-        return "{$this->rootStorageDirectory}/vonage/{$path}";
-    }
-
     public function newMessageSummaryData(Manifest $manifest): MessageSummaryData
     {
         return MessageSummaryData::from([
@@ -42,6 +38,7 @@ class Vonage extends Channel
             ],
             'from' => $manifest->data['from'],
             'sentAt' => $manifest->sentAt,
+            'data' => new SmsMessageData,
         ]);
     }
 

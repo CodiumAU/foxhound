@@ -2,6 +2,7 @@
 
 namespace Foxhound;
 
+use Illuminate\Support\Str;
 use Foxhound\Channels\Channel;
 use Illuminate\Support\Manager;
 
@@ -17,7 +18,17 @@ class ChannelManager extends Manager
 
     public function createMailDriver(): Channels\Mail
     {
-        return $this->createChannelDriver(Channels\Mail::class);
+        $channel = $this->createChannelDriver(Channels\Mail::class);
+
+        foreach (['from', 'to', 'reply_to'] as $key) {
+            $address = $this->container['config']["mail.{$key}"] ?? null;
+
+            if (isset($address['address'])) {
+                $channel->{'always'.Str::studly($key)}($address['address'], $address['name'] ?? null);
+            }
+        }
+
+        return $channel;
     }
 
     public function createVonageDriver(): Channels\Vonage

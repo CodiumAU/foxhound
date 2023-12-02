@@ -28,6 +28,13 @@ class ChannelMessageController extends Controller
         return MessageListResource::collection(array_values($messages));
     }
 
+    public function show(ChannelManager $manager, Filesystem $filesystem, string $channel, string $uuid)
+    {
+        $driver = $manager->driver($channel);
+
+        dd($driver->manifest($uuid));
+    }
+
     public function destroy(ChannelManager $manager, Filesystem $filesystem, string $channel): HttpResponse
     {
         $driver = $manager->driver($channel);
