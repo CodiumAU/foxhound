@@ -31,15 +31,13 @@
             class="ms-auto shrink-0 w-4 h-4"
           />
         </div>
-        <div class="flex flex-row gap-2">
-          <span class="truncate">
-            <template
-              v-for="recipient in message.recipients"
-              :key="recipient.address"
-            >
-              &lt;{{ recipient.address }}&gt;
-            </template>
-          </span>
+        <div class="flex flex-row gap-3">
+          <div class="flex flex-row truncate gap-3">
+            <span class="truncate">{{ recipient.address }} </span>
+            <span v-if="additionalRecipients > 0" class="shrink-0">
+              (+{{ additionalRecipients }})
+            </span>
+          </div>
           <span class="ms-auto shrink-0">{{ sentAt }}</span>
         </div>
       </a>
@@ -51,13 +49,17 @@
 import { computed, onMounted, ref } from 'vue'
 import type { MessageListResource } from '../stores/channels'
 import { parseISO, formatDistanceToNowStrict } from 'date-fns'
-import { PaperClipIcon } from '@heroicons/vue/20/solid'
+import { PaperClipIcon, PlusIcon } from '@heroicons/vue/20/solid'
 
 const props = defineProps<{
   message: MessageListResource
   channel: string
 }>()
 
+const recipient = computed(() => props.message.recipients[0])
+const additionalRecipients = computed(
+  () => props.message.recipients.slice(1).length
+)
 const unread = computed(() => props.message.unread)
 const read = computed(() => !unread.value)
 const sentAt = ref(parseSentAt())
