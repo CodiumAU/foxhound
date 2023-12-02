@@ -1,6 +1,6 @@
 <template>
   <span
-    class="inline-flex items-center gap-x-1.5 py-1 px-2 rounded-full text-xs font-medium border border-gray-200 bg-white text-gray-800 dark:bg-slate-900 dark:border-gray-700 dark:text-white"
+    class="shrink-0 inline-flex items-center gap-x-1.5 py-1 px-2 rounded-full text-xs font-medium border border-gray-200 bg-white text-gray-800 dark:bg-slate-900 dark:border-gray-700 dark:text-white"
   >
     <template v-if="name">
       {{ name }}
