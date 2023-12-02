@@ -1,6 +1,6 @@
 <?php
 
-use App\Http\Controllers;
+use Foxhound\Http\Controllers;
 use Illuminate\Support\Facades\Route;
 
 Route::get('channels', Controllers\ChannelController::class);

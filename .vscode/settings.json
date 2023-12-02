@@ -1,0 +1,12 @@
+{
+    "vue.complete.casing.props": "kebab",
+    "vue.complete.casing.tags": "pascal",
+    "[javascript][typescript][vue]": {
+        "editor.defaultFormatter": "esbenp.prettier-vscode",
+        "editor.formatOnSave": false,
+        "editor.formatOnPaste": false,
+        "editor.codeActionsOnSave": {
+            "source.fixAll.eslint": true
+        },
+    },
+}
