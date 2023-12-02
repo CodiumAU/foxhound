@@ -84,6 +84,7 @@ class Mail extends Channel
         return MessageSummaryData::from([
             'uuid' => $manifest->uuid,
             'unread' => $manifest->unread,
+            'hasAttachments' => !empty($manifest->data['attachments']),
             'subject' => $manifest->data['subject'],
             'recipients' => array_map(
                 callback: fn (array $data) => MessageRecipientData::from($data),

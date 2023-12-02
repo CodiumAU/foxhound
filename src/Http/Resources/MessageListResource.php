@@ -20,6 +20,7 @@ class MessageListResource extends JsonResource
         return [
             'uuid' => $this->uuid,
             'unread' => $this->unread,
+            'has_attachments' => $this->hasAttachments,
             'subject' => $this->subject,
             'recipients' => $this->recipients->toArray(),
             'sent_at' => $this->sentAt->toIso8601String(),

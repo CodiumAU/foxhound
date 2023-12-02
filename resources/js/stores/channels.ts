@@ -51,6 +51,7 @@ export type ChannelListResource = {
 export type MessageListResource = {
   uuid: string
   unread: boolean
+  has_attachments: boolean
   subject: string | null
   recipients: {
     name: string | null

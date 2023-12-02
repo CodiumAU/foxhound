@@ -21,12 +21,18 @@
         }"
         @click="navigate"
       >
-        <div class="text-sm truncate" :class="{ 'font-semibold': isActive }" v-if="message.subject">
-          {{ message.subject }}
+        <div class="text-sm flex flex-row gap-2">
+          <span class="truncate" :class="{ 'font-semibold': isActive }">
+            {{ message.subject }}
+          </span>
+
+          <PaperClipIcon
+            v-if="message.has_attachments"
+            class="ms-auto shrink-0 w-4 h-4"
+          />
         </div>
         <div class="flex flex-row gap-2">
           <span class="truncate">
-            to:
             <template
               v-for="recipient in message.recipients"
               :key="recipient.address"
@@ -45,6 +51,7 @@
 import { computed, onMounted, ref } from 'vue'
 import type { MessageListResource } from '../stores/channels'
 import { parseISO, formatDistanceToNowStrict } from 'date-fns'
+import { PaperClipIcon } from '@heroicons/vue/20/solid'
 
 const props = defineProps<{
   message: MessageListResource

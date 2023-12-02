@@ -35,6 +35,7 @@ class Vonage extends Channel
         return MessageSummaryData::from([
             'uuid' => $manifest->uuid,
             'unread' => $manifest->unread,
+            'hasAttachments' => false,
             'subject' => $manifest->data['message'],
             'recipients' => [
                 MessageRecipientData::from(['address' => $manifest->data['to']])
