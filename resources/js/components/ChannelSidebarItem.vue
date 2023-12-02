@@ -21,7 +21,7 @@
         }"
         @click="navigate"
       >
-        <div class="text-sm truncate" :class="{ 'font-semibold': isActive }">
+        <div class="text-sm truncate" :class="{ 'font-semibold': isActive }" v-if="message.subject">
           {{ message.subject }}
         </div>
         <div class="flex flex-row gap-2">
@@ -43,7 +43,7 @@
 
 <script lang="ts" setup>
 import { computed, onMounted, ref } from 'vue'
-import type { MessageListResource } from '../stores/channels-mail'
+import type { MessageListResource } from '../stores/channels'
 import { parseISO, formatDistanceToNowStrict } from 'date-fns'
 
 const props = defineProps<{

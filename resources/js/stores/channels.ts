@@ -44,7 +44,7 @@ export type ChannelListResource = {
 export type MessageListResource = {
   uuid: string
   unread: boolean
-  subject: string
+  subject: string | null
   recipients: {
     name: string | null
     address: string
