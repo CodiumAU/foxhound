@@ -1,12 +1,12 @@
 <?php
 
-namespace App\Listeners\NotificationSending;
+namespace Foxhound\Listeners\NotificationSending;
 
 use Foxhound\Manifest;
 use Carbon\CarbonImmutable;
 use Illuminate\Support\Str;
-use InvalidArgumentException;
 use Foxhound\ChannelManager;
+use InvalidArgumentException;
 use Illuminate\Contracts\Filesystem\Filesystem;
 use Illuminate\Notifications\Events\NotificationSending;
 use Illuminate\Contracts\Config\Repository as ConfigRepository;
@@ -28,6 +28,7 @@ class InterceptNotification
      */
     public function handle(NotificationSending $event): bool
     {
+        // Do not intercept a notification for a channel that has not been configured.
         if (!in_array($event->channel, $this->config->get('foxhound.channels', []))) {
             return true;
         }
@@ -43,8 +44,10 @@ class InterceptNotification
                 event: $event,
             ));
 
+            // Intercept the notification.
             $driver->intercept($event, $manifest);
 
+            // Save the manifest after the driver has run any additional logic for the interception.
             $driver->save($manifest);
 
             return false;
