@@ -2,6 +2,7 @@
 
 namespace Foxhound\Channels;
 
+use Foxhound\Number;
 use RuntimeException;
 use Foxhound\Manifest;
 use Foxhound\ChannelType;
@@ -10,7 +11,6 @@ use Illuminate\Support\Str;
 use Illuminate\Mail\Mailable;
 use Foxhound\Data\ChannelData;
 use Foxhound\Data\MessageData;
-use Illuminate\Support\Number;
 use Foxhound\Data\AttachmentData;
 use Foxhound\Data\MailMessageData;
 use Foxhound\Data\MessageRecipientData;
@@ -79,6 +79,10 @@ class Mail extends Channel
 
         /** @var array $attachment */
         foreach ($mail->rawAttachments as $attachment) {
+            if (!$attachment['data']) {
+                continue;
+            }
+
             $uuid = Str::uuid();
 
             $this->store(
