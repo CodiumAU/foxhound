@@ -103,15 +103,19 @@ const messages = computed(() => {
     'data.bcc.address',
   ]
 
-  if (query.startsWith('to:')) {
-    keys = ['recipients.address']
-    query = query.replace('to:', '').trim()
-  } else if (query.startsWith('cc:')) {
-    keys = ['data.cc.address']
-    query = query.replace('cc:', '').trim()
-  } else if (query.startsWith('bcc:')) {
-    keys = ['data.bcc.address']
-    query = query.replace('bcc:', '').trim()
+  const prefixes = {
+    to: 'recipients.address',
+    cc: 'data.cc.address',
+    bcc: 'data.bcc.address',
+  }
+
+  for (const [prefix, key] of Object.entries(prefixes)) {
+    if (query.startsWith(`${prefix}:`)) {
+      keys = [key]
+      query = query.replace(`${prefix}:`, '').trim()
+
+      break
+    }
   }
 
   const fuse = new Fuse(channelsStore.messages, {
