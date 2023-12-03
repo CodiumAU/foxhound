@@ -1,4 +1,4 @@
-@extends('template')
+@extends('foxhound::template')
 
 @section('content')
 <div class="h-full flex items-center justify-center">

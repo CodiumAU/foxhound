@@ -20,7 +20,7 @@ abstract class Channel
     ) {
     }
 
-    public function manifest(string $uuid): Manifest
+    public function manifest(string $uuid): ?Manifest
     {
         $path = $this->relativePath("{$uuid}/manifest.json");
 
@@ -28,7 +28,9 @@ abstract class Channel
             return Manifest::parse($this->filesystem->get($path));
         }
 
-        throw new RuntimeException("Manifest not found for {$uuid}.");
+        $this->filesystem->deleteDirectory($this->relativePath($uuid));
+
+        return null;
     }
 
     public function make(Manifest $manifest): Manifest

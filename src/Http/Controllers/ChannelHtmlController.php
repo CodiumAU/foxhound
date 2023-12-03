@@ -5,6 +5,7 @@ namespace Foxhound\Http\Controllers;
 use Exception;
 use Foxhound\ChannelManager;
 use Illuminate\Routing\Controller;
+use Illuminate\Support\Facades\Response;
 
 class ChannelHtmlController extends Controller
 {
@@ -12,15 +13,14 @@ class ChannelHtmlController extends Controller
     {
         $driver = $manager->driver($channel);
 
-        try {
-            $manifest = $driver->manifest($uuid);
+        if ($manifest = $driver->manifest($uuid)) {
             $manifest->markAsRead();
 
             $driver->save($manifest);
 
             return $driver->response($manifest);
-        } catch (Exception) {
-            return view('404');
         }
+
+        return Response::view('foxhound::404');
     }
 }

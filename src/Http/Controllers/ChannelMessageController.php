@@ -18,9 +18,9 @@ class ChannelMessageController extends Controller
         $messages = [];
 
         foreach ($filesystem->glob($driver->path('*'), GLOB_ONLYDIR) as $path) {
-            $manifest = $driver->manifest(basename($path));
-
-            $messages[$manifest->uuid] = $driver->newMessageSummaryData($manifest);
+            if ($manifest = $driver->manifest(basename($path))) {
+                $messages[$manifest->uuid] = $driver->newMessageSummaryData($manifest);
+            }
         }
 
         krsort($messages, SORT_STRING);

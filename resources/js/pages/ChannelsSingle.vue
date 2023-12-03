@@ -8,13 +8,17 @@
     >
       Select a message to view.
     </div>
-    <template v-else-if="message !== undefined && iframeSource">
-      <Component :is="headerComponent" v-bind="{ message }" />
+    <template v-else>
+      <Component
+        :is="headerComponent"
+        v-if="message !== undefined"
+        v-bind="{ message }"
+      />
 
       <div
         class="rounded-lg h-full w-full border border-gray-200 dark:border-gray-700 bg-white overflow-hidden"
       >
-        <iframe :src="iframeSource" class="w-full h-full" />
+        <iframe v-if="iframeSource" :src="iframeSource" class="w-full h-full" />
       </div>
     </template>
   </PageContainer>
