@@ -13,6 +13,16 @@
 </template>
 
 <script lang="ts" setup>
+import { useRoute } from 'vue-router'
 import AppHeader from './components/AppHeader.vue'
 import AppSidebar from './components/AppSidebar.vue'
+import { watch } from 'vue'
+import { HSDropdown, HSOverlay } from 'preline'
+
+const route = useRoute()
+
+watch(route, () => {
+  HSOverlay.autoInit()
+  HSDropdown.autoInit()
+})
 </script>
