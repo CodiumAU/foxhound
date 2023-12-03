@@ -10,7 +10,7 @@ use Illuminate\Http\Response as HttpResponse;
 use Foxhound\Http\Resources\MessageListResource;
 use Illuminate\Http\Resources\Json\ResourceCollection;
 
-class ChannelMessageController extends Controller
+class MessageController extends Controller
 {
     /**
      * Get a list of messages for a given channel.

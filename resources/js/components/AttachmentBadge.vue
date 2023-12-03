@@ -10,6 +10,7 @@
       class="shrink-0 w-5 h-5"
       :class="{
         'text-blue-500': attachment.type === 'image',
+        'text-indigo-500': attachment.type === 'audio',
         'text-green-500': attachment.type === 'video',
         'text-red-500': attachment.type === 'document',
         'text-gray-500': attachment.type === 'other',
@@ -42,7 +43,7 @@ const props = defineProps<{
     name: string
     size: string
     url: string
-    type: 'image' | 'video' | 'document' | 'other'
+    type: 'image' | 'video' | 'audio' | 'document' | 'other'
   }
 }>()
 

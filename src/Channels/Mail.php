@@ -242,17 +242,12 @@ class Mail extends Channel
         return collect($manifest->data['attachments'])
             ->map(fn (array $data, $uuid) => AttachmentData::from([
                 'name' => $data['name'],
-                'type' => match (Str::afterLast($data['name'], '.')) {
-                    'pdf', 'txt', 'doc', 'docx', 'csv', 'xls', 'xlsx', 'ppt', 'pptx' => AttachmentType::Document,
-                    'png', 'jpg', 'jpeg', 'gif', 'svg', 'bmp' => AttachmentType::Image,
-                    'mp4', 'wma', 'wmv', 'mkv' => AttachmentType::Video,
-                    default =>  AttachmentType::Other,
-                },
+                'type' => AttachmentType::fromExtension(Str::afterLast($data['name'], '.')),
                 'size' => Number::fileSize(
                     bytes: $this->filesystem->size($this->path("{$manifest->uuid}/attachments/{$uuid}")),
                     precision: 2
                 ),
-                'url' => URL::route('foxhound.attachment', [
+                'url' => URL::route('foxhound::attachment', [
                     'channel' => $this->data()->key,
                     'message' => $manifest->uuid,
                     'attachment' => $uuid,

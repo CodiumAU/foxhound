@@ -7,12 +7,11 @@ use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\Response;
 use Illuminate\Http\Response as HttpResponse;
 use Symfony\Component\HttpFoundation\StreamedResponse;
-use Symfony\Component\HttpFoundation\BinaryFileResponse;
 
-class ChannelMessageAttachmentController extends Controller
+class AttachmentController extends Controller
 {
     /**
-     * Get the HTML markup for a given message and channel.
+     * Get the attachment for a given message and channel.
      */
     public function __invoke(ChannelManager $manager, string $channel, string $message, string $attachment): HttpResponse | StreamedResponse
     {
@@ -26,6 +25,7 @@ class ChannelMessageAttachmentController extends Controller
                     echo $channel->file("{$message}/attachments/{$attachment}");
                 }, 200, [
                     'Content-Type' => $attachments[$attachment]['mime'],
+                    'Content-Disposition' => sprintf('inline; filename="%s"', $attachments[$attachment]['name']),
                 ]);
             }
         }
