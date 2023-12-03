@@ -46,6 +46,14 @@ abstract class Channel
     }
 
     /**
+     * Get the contents of a file.
+     */
+    public function file(string $name): string
+    {
+        return $this->filesystem->get($this->path($name));
+    }
+
+    /**
      * Resolve a manifest by its UUID.
      */
     public function buildManifest(string $uuid): ?Manifest

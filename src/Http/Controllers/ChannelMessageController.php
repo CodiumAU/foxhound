@@ -36,7 +36,7 @@ class ChannelMessageController extends Controller
             return $channel->response($manifest);
         }
 
-        return Response::view('foxhound::404');
+        return Response::view('foxhound::message_not_found');
     }
 
     /**

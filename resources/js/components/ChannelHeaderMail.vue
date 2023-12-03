@@ -40,14 +40,25 @@
         </span>
       </div>
     </li>
+    <li
+      v-if="message.data.attachments.length > 0"
+      class="inline-flex items-center gap-x-2 py-3 px-4 text-sm border text-gray-800 -mt-px first:rounded-t-lg first:mt-0 last:rounded-b-lg bg-white dark:bg-gray-800 dark:border-gray-700 dark:text-gray-200"
+    >
+      <AttachmentBadge
+        v-for="(attachment, index) in message.data.attachments"
+        :key="`attachment-${index}`"
+        v-bind="{ attachment }"
+      />
+    </li>
   </ul>
 </template>
 
 <script lang="ts" setup>
 import { computed } from 'vue'
 import type { MessageListResource } from '../stores/channels'
-import RecipientBadge from './RecipientBadge.vue'
 import { format, parseISO } from 'date-fns'
+import RecipientBadge from './RecipientBadge.vue'
+import AttachmentBadge from './AttachmentBadge.vue'
 
 const props = defineProps<{
   message: MessageListResource
