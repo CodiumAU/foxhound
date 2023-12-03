@@ -15,16 +15,15 @@
             />
           </template>
         </span>
-
-        <div
-          v-if="segmentedMessage.segmentsCount > 1"
-          class="col-span-12 bg-yellow-100 border-y border-yellow-200 text-sm text-yellow-800 -mx-4 px-4 py-3 dark:bg-yellow-800/10 dark:border-yellow-900 dark:text-yellow-500"
-        >
-          This message will likely result in
-          <strong>{{ segmentedMessage.segmentsCount }}</strong> segments when
-          sent. This may result in additional charges.
-        </div>
       </div>
+    </li>
+    <li
+      v-if="segmentedMessage.segmentsCount > 1"
+      class="py-3 px-4 text-sm border -mt-px first:rounded-t-lg first:mt-0 last:rounded-b-lg text-yellow-800 bg-yellow-100 dark:bg-yellow-800/10 dark:border-yellow-900 dark:text-yellow-500"
+    >
+      This message will likely result in
+      <strong>{{ segmentedMessage.segmentsCount }}</strong> segments when sent.
+      This may result in additional charges.
     </li>
   </ul>
 </template>
