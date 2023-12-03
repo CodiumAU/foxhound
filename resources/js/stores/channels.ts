@@ -14,7 +14,7 @@ export const useChannelsStore = defineStore('channels', () => {
     channels.value = response.data.data
   }
 
-  async function getMessages(channel: ChannelType) {
+  async function getMessages(channel: string) {
     const response = await http.get<{ data: MessageListResource[] }>(
       `/channels/${channel}/messages`
     )
@@ -22,7 +22,7 @@ export const useChannelsStore = defineStore('channels', () => {
     messages.value = response.data.data
   }
 
-  async function clearMessages(channel: ChannelType) {
+  async function clearMessages(channel: string) {
     await http.delete(`/channels/${channel}/messages`)
 
     messages.value = []

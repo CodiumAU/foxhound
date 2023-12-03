@@ -38,7 +38,7 @@
 
 <script lang="ts" setup>
 import { storeToRefs } from 'pinia'
-import { useChannelsStore, type ChannelType } from '../stores/channels'
+import { useChannelsStore, type ChannelListResource } from '../stores/channels'
 import { Cog6ToothIcon } from '@heroicons/vue/24/outline'
 import { useAlert } from '../composables/use-alert'
 import { useRouter } from 'vue-router'
@@ -48,7 +48,7 @@ import DropdownMenuItem from './DropdownMenuItem.vue'
 import IconButton from './IconButton.vue'
 
 const props = defineProps<{
-  channel: ChannelType
+  channel: ChannelListResource
 }>()
 
 const router = useRouter()
@@ -67,12 +67,12 @@ async function clearMessages() {
     return
   }
 
-  await channelsStore.clearMessages(props.channel)
+  await channelsStore.clearMessages(props.channel.key)
 
   router.replace({
     name: 'channels.single',
     params: {
-      channel: props.channel,
+      channel: props.channel.key,
     },
   })
 }

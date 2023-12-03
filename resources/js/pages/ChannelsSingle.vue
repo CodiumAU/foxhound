@@ -1,10 +1,10 @@
 <template>
-  <ChannelSidebar v-bind="{ channel }" />
+  <ChannelSidebar v-if="channel" v-bind="{ channel }" />
 
   <PageContainer>
     <div
       v-if="uuid === undefined || uuid === ''"
-      class="flex items-center justify-center h-full text-2xl font-light text-gray-500 dark:text-slate-400"
+      class="grow flex items-center justify-center h-full text-2xl font-light text-gray-500 dark:text-slate-400"
     >
       Select a message to view.
     </div>
@@ -16,7 +16,7 @@
       />
 
       <div
-        class="rounded-lg h-full w-full border border-gray-200 dark:border-gray-700 bg-white overflow-hidden"
+        class="grow rounded-lg h-full w-full border border-gray-200 dark:border-gray-700 bg-white overflow-hidden"
       >
         <iframe v-if="iframeSource" :src="iframeSource" class="w-full h-full" />
       </div>
@@ -45,7 +45,7 @@ const props = withDefaults(
 )
 
 const channelsStore = useChannelsStore()
-const { messages } = storeToRefs(channelsStore)
+const { messages, channels } = storeToRefs(channelsStore)
 
 watch(
   () => props.channel,
@@ -59,6 +59,9 @@ watch(
 
 watch(() => props.uuid, markMessageAsRead)
 
+const channel = computed(() =>
+  channels.value.find((channel) => channel.key === props.channel)
+)
 const message = computed(() =>
   messages.value.find((message) => message.uuid === props.uuid)
 )
@@ -73,7 +76,11 @@ const iframeSource = computed(() => {
 })
 
 const headerComponent = computed(() => {
-  switch (props.channel) {
+  if (!channel.value) {
+    return null
+  }
+
+  switch (channel.value.type) {
     case ChannelType.Mail:
       return ChannelHeaderMail
     case ChannelType.Sms:

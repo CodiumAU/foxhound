@@ -4,7 +4,7 @@
     custom
     :to="{
       name: 'channels.single',
-      params: { channel, uuid: props.message.uuid },
+      params: { channel: props.channel.key, uuid: props.message.uuid },
     }"
   >
     <li class="grow-0">
@@ -47,13 +47,16 @@
 
 <script lang="ts" setup>
 import { computed, onMounted, ref } from 'vue'
-import type { MessageListResource } from '../stores/channels'
+import type {
+  ChannelListResource,
+  MessageListResource,
+} from '../stores/channels'
 import { parseISO, formatDistanceToNowStrict } from 'date-fns'
 import { PaperClipIcon } from '@heroicons/vue/20/solid'
 
 const props = defineProps<{
   message: MessageListResource
-  channel: string
+  channel: ChannelListResource
 }>()
 
 const recipient = computed(() => props.message.recipients[0])
