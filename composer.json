@@ -1,24 +1,12 @@
 {
     "name": "codium/foxhound",
     "type": "library",
-    "autoload": {
-        "psr-4": {
-            "Foxhound\\": "src/"
-        }
-    },
     "authors": [
         {
             "name": "Jason Lewis",
             "email": "jason.lewis1991@gmail.com"
         }
     ],
-    "extra": {
-        "laravel": {
-            "providers": [
-                "Foxhound\\ServiceProvider"
-            ]
-        }
-    },
     "require": {
         "spatie/laravel-data": "^3.0",
         "illuminate/support": "^9.0 || ^10.0",
@@ -28,5 +16,19 @@
         "illuminate/routing": "^9.0 || ^10.0",
         "illuminate/view": "^9.0 || ^10.0",
         "illuminate/filesystem": "^9.0 || ^10.0"
-    }
+    },
+    "autoload": {
+        "psr-4": {
+            "Foxhound\\": "src/"
+        }
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Foxhound\\ServiceProvider"
+            ]
+        }
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true
 }
