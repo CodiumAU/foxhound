@@ -1,12 +1,17 @@
 <template>
   <ul v-if="segmentedMessage" class="flex flex-col my-3">
     <li
-      class="inline-flex items-center gap-x-2 py-3 px-4 text-sm border text-gray-800 -mt-px first:rounded-t-lg first:mt-0 last:rounded-b-lg bg-white dark:bg-gray-800 dark:border-gray-700 dark:text-gray-200"
+      class="inline-flex items-center gap-x-2 pt-3 px-4 text-sm border border-b-0 text-gray-800 -mt-px first:rounded-t-lg first:mt-0 last:rounded-b-lg bg-white dark:bg-gray-800 dark:border-gray-700 dark:text-gray-200"
     >
-      <div class="w-full grid grid-cols-12 gap-4 items-center">
+      <div class="font-medium mb-1">Segment breakdown</div>
+    </li>
+    <li
+      class="max-h-32 xl:max-h-full box-content inline-flex items-center gap-x-2 py-3 px-4 text-sm border border-t-0 text-gray-800 -mt-px first:rounded-t-lg first:mt-0 last:rounded-b-lg bg-white dark:bg-gray-800 dark:border-gray-700 dark:text-gray-200"
+    >
+      <div
+        class="h-full w-full grid grid-cols-12 gap-4 items-center overflow-y-scroll"
+      >
         <span class="col-span-12 flex flex-wrap gap-0.5">
-          <div class="basis-full font-medium mb-1">Segment breakdown</div>
-
           <template v-for="(segments, number) in segmentedMessage.segments">
             <SmsSegmentBadge
               v-for="(segment, index) in segments"
