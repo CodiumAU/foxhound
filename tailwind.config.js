@@ -14,7 +14,7 @@ export default {
     fontFamily: {
       sans: ['Rubik', 'sans-serif'],
       serif: ['Hedvig Letters Serif', 'serif'],
-      mono: ['Inconsolata'],
+      mono: ['Inconsolata', 'monospace'],
     },
   },
   plugins: [forms, preline],
