@@ -36,6 +36,8 @@
             :key="`recipient-${address}`"
             :name="name"
             :address="address"
+            class="cursor-pointer"
+            @click="search = `${label.toLowerCase()}:${address}`"
           />
         </span>
       </div>
@@ -55,14 +57,18 @@
 
 <script lang="ts" setup>
 import { computed } from 'vue'
-import type { MessageListResource } from '../stores/channels'
+import { useChannelsStore, type MessageListResource } from '../stores/channels'
 import { format, parseISO } from 'date-fns'
 import RecipientBadge from './RecipientBadge.vue'
 import AttachmentBadge from './AttachmentBadge.vue'
+import { storeToRefs } from 'pinia'
 
 const props = defineProps<{
   message: MessageListResource
 }>()
+
+const channelsStore = useChannelsStore()
+const { search } = storeToRefs(channelsStore)
 
 const data = computed(() =>
   [

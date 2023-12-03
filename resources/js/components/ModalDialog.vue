@@ -11,17 +11,17 @@
       <div
         class="w-full flex flex-col bg-white border shadow-sm rounded-xl dark:bg-gray-800 dark:border-gray-700 dark:shadow-slate-700/[.7]"
       >
-        <div class="py-3 px-4 text-center">
+        <div class="py-4 px-4 text-center">
           <h2 class="font-semibold text-xl text-gray-800 dark:text-white">
             {{ title }}
           </h2>
         </div>
-        <div class="p-4 overflow-y-auto">
+        <div class="px-4 py-2 overflow-y-auto">
           <p class="mt-1 text-gray-700 dark:text-gray-400 text-center">
             {{ message }}
           </p>
         </div>
-        <div class="flex justify-end items-center gap-x-2 py-3 px-4">
+        <div class="flex justify-end items-center gap-x-2 py-4 px-4">
           <button
             type="button"
             class="py-2 px-3 inline-flex items-center gap-x-2 text-sm font-medium rounded-lg border border-gray-200 bg-white text-gray-800 shadow-sm hover:bg-gray-50 disabled:opacity-50 disabled:pointer-events-none dark:bg-slate-900 dark:border-gray-700 dark:text-white dark:hover:bg-gray-800 dark:focus:outline-none dark:focus:ring-1 dark:focus:ring-gray-600"

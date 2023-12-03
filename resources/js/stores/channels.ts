@@ -5,6 +5,7 @@ import { ref } from 'vue'
 export const useChannelsStore = defineStore('channels', () => {
   const channels = ref<ChannelListResource[]>([])
   const messages = ref<MessageListResource[]>([])
+  const search = ref<string | null>(null)
 
   async function getChannels() {
     const response = await http.get<{ data: ChannelListResource[] }>(
@@ -29,6 +30,7 @@ export const useChannelsStore = defineStore('channels', () => {
   }
 
   return {
+    search,
     messages,
     getMessages,
     clearMessages,

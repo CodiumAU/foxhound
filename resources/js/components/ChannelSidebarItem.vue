@@ -31,7 +31,10 @@
             class="ms-auto shrink-0 w-4 h-4"
           />
         </div>
-        <div class="flex flex-row gap-3">
+        <div
+          class="flex flex-row gap-3"
+          :class="{ 'font-medium': unread && !isActive }"
+        >
           <div class="flex flex-row truncate gap-3">
             <span class="truncate">{{ recipient.address }} </span>
             <span v-if="additionalRecipients > 0" class="shrink-0">

@@ -16,13 +16,19 @@
 import { useRoute } from 'vue-router'
 import AppHeader from './components/AppHeader.vue'
 import AppSidebar from './components/AppSidebar.vue'
-import { watch } from 'vue'
+import { nextTick, watch } from 'vue'
 import { HSDropdown, HSOverlay } from 'preline'
 
 const route = useRoute()
 
-watch(route, () => {
-  HSOverlay.autoInit()
-  HSDropdown.autoInit()
-})
+watch(
+  route,
+  async () => {
+    await nextTick()
+
+    HSOverlay.autoInit()
+    HSDropdown.autoInit()
+  },
+  { immediate: true }
+)
 </script>
