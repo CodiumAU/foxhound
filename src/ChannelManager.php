@@ -16,6 +16,11 @@ class ChannelManager extends Manager
         return 'mail';
     }
 
+    public function channel(?string $channel): Channel
+    {
+        return $this->driver($channel);
+    }
+
     public function createMailDriver(): Channels\Mail
     {
         $channel = $this->createChannelDriver(Channels\Mail::class);

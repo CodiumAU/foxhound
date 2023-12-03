@@ -34,21 +34,19 @@ class InterceptNotification
         }
 
         try {
-            $driver = $this->manager->driver($event->channel);
-
-            // Create manifest.
-            $manifest = $driver->make(new Manifest(
+            $channel = $this->manager->channel($event->channel);
+            $manifest = new Manifest(
+                channel: $channel,
                 uuid: Str::orderedUuid(),
-                channel: $event->channel,
                 sentAt: CarbonImmutable::now(),
                 event: $event,
-            ));
+            );
 
             // Intercept the notification.
-            $driver->intercept($event, $manifest);
+            $channel->intercept($event, $manifest);
 
             // Save the manifest after the driver has run any additional logic for the interception.
-            $driver->save($manifest);
+            $manifest->save();
 
             return false;
         } catch (InvalidArgumentException) {

@@ -7,25 +7,38 @@ use Foxhound\Manifest;
 use Foxhound\ChannelType;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Str;
-use Illuminate\Http\Response;
 use Illuminate\Mail\Mailable;
 use Foxhound\Data\ChannelData;
+use Foxhound\Data\MessageData;
 use Illuminate\Support\Number;
 use Foxhound\Data\AttachmentData;
 use Foxhound\Data\MailMessageData;
-use Foxhound\Data\MessageSummaryData;
 use Foxhound\Data\MessageRecipientData;
+use Illuminate\Support\Facades\Response;
+use Illuminate\Http\Response as HttpResponse;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Events\NotificationSending;
 
 class Mail extends Channel
 {
+    /**
+     * Address that is always used as the "from" address.
+     */
     protected array $alwaysFrom;
 
+    /**
+     * Addresses that are always used as the "to" addresses.
+     */
     protected array $alwaysTo;
 
+    /**
+     * Addresses that are always used as the "reply to" addresses.
+     */
     protected array $alwaysReplyTo;
 
+    /**
+     * {@inheritDoc}
+     */
     public function intercept(NotificationSending $event, Manifest $manifest): void
     {
         throw_unless(method_exists($event->notification, 'toMail'), new RuntimeException('Notification does not have a "toMail" method.'));
@@ -34,10 +47,7 @@ class Mail extends Channel
         $mail = $event->notification->toMail($event->notifiable);
 
         // Generate and store the rendered mail.
-        $this->filesystem->put(
-            $this->relativePath("{$manifest->uuid}/index.html"),
-            $mail->render(),
-        );
+        $this->store("{$manifest->uuid}/index.html", $mail->render());
 
         $manifest->data('subject', $this->subject($event, $mail));
         $manifest->data('from', $this->from($event, $mail));
@@ -46,9 +56,8 @@ class Mail extends Channel
         $manifest->data('cc', $this->normalizeAddresses($mail->cc));
         $manifest->data('bcc', $this->normalizeAddresses($mail->bcc));
 
-        $this->filesystem->makeDirectory($this->relativePath("{$manifest->uuid}/attachments"));
-
         // Store mail attachments.
+        $this->directory("{$manifest->uuid}/attachments");
         $attachments = [];
 
         /** @var array $attachment */
@@ -57,8 +66,8 @@ class Mail extends Channel
 
             $fileName = $attachment['options']['as'] ?? basename($attachment['file']);
 
-            $this->filesystem->put(
-                $this->relativePath("{$manifest->uuid}/attachments/{$uuid}"),
+            $this->store(
+                "{$manifest->uuid}/attachments/{$uuid}",
                 file_get_contents($attachment['file'])
             );
 
@@ -72,8 +81,8 @@ class Mail extends Channel
         foreach ($mail->rawAttachments as $attachment) {
             $uuid = Str::uuid();
 
-            $this->filesystem->put(
-                $this->relativePath("{$manifest->uuid}/attachments/{$uuid}"),
+            $this->store(
+                "{$manifest->uuid}/attachments/{$uuid}",
                 $attachment['data']
             );
 
@@ -86,9 +95,12 @@ class Mail extends Channel
         $manifest->data('attachments', $attachments);
     }
 
-    public function newMessageSummaryData(Manifest $manifest): MessageSummaryData
+    /**
+     * {@inheritDoc}
+     */
+    public function buildMessageData(Manifest $manifest): MessageData
     {
-        return MessageSummaryData::from([
+        return MessageData::from([
             'uuid' => $manifest->uuid,
             'unread' => $manifest->unread,
             'hasAttachments' => !empty($manifest->data['attachments']),
@@ -103,11 +115,14 @@ class Mail extends Channel
                 'bcc' => $manifest->data['bcc'],
                 'replyTo' => $manifest->data['replyTo'],
                 'from' => $manifest->data['from'],
-                'attachments' => $this->attachments($manifest),
+                'attachments' => $this->buildAttachmentsData($manifest),
             ])
         ]);
     }
 
+    /**
+     * Get the subject for the mail message.
+     */
     protected function subject(NotificationSending $event, Mailable | MailMessage $mail): string
     {
         if (isset($mail->subject)) {
@@ -117,6 +132,9 @@ class Mail extends Channel
         return Str::headline(class_basename($event->notification));
     }
 
+    /**
+     * Get the "to" addresses for the mail message.
+     */
     protected function to(NotificationSending $event, Mailable | MailMessage $mail): array
     {
         $to = $mail instanceof Mailable ? $mail->to : [
@@ -130,6 +148,9 @@ class Mail extends Channel
         return $this->normalizeAddresses($to);
     }
 
+    /**
+     * Get the "from" addresses for the mail message.
+     */
     protected function from(NotificationSending $event, Mailable | MailMessage $mail): array
     {
         if (empty($mail->from)) {
@@ -145,6 +166,9 @@ class Mail extends Channel
         };
     }
 
+    /**
+     * Get the "reply to" addresses for the mail message.
+     */
     protected function replyTo(NotificationSending $event, Mailable | MailMessage $mail): array
     {
         $replyTo = $mail->replyTo;
@@ -156,27 +180,27 @@ class Mail extends Channel
         return $this->normalizeAddresses($replyTo);
     }
 
+    /**
+     * Normalize the given addresses into a consistent array format.
+     */
     protected function normalizeAddresses(array $addresses): array
     {
         return array_map(fn ($address) => Arr::isAssoc($address) ? $address : ['address' => $address[0], 'name' => $address[1]], $addresses);
     }
 
-    public function response(Manifest $manifest): Response
+    /**
+     * {@inheritDoc}
+     */
+    public function response(Manifest $manifest): HttpResponse
     {
-        return response($this->filesystem->get($this->relativePath("{$manifest->uuid}/index.html")), 200, [
+        return Response::make($this->filesystem->get($this->path("{$manifest->uuid}/index.html")), 200, [
             'Content-Type' => 'text/html',
         ]);
     }
 
-    public function data(): ChannelData
-    {
-        return ChannelData::from([
-            'key' => 'mail',
-            'name' => 'Mail',
-            'type' => ChannelType::Mail
-        ]);
-    }
-
+    /**
+     * Set the address that is always used as the "from" address.
+     */
     public function alwaysFrom(string $address, ?string $name): self
     {
         $this->alwaysFrom = compact('address', 'name');
@@ -184,6 +208,9 @@ class Mail extends Channel
         return $this;
     }
 
+    /**
+     * Set the addresses that are always used as the "to" addresses.
+     */
     public function alwaysTo(string $address, ?string $name): self
     {
         $this->alwaysTo = compact('address', 'name');
@@ -191,10 +218,43 @@ class Mail extends Channel
         return $this;
     }
 
+    /**
+     * Set the addresses that are always used as the "reply to" addresses.
+     */
     public function alwaysReplyTo(string $address, ?string $name): self
     {
         $this->alwaysReplyTo = compact('address', 'name');
 
         return $this;
+    }
+
+    /**
+     * Build the attachments data for the given manifest.
+     */
+    public function buildAttachmentsData(Manifest $manifest): array
+    {
+        return collect($manifest->data['attachments'])
+            ->map(fn (array $data, $uuid) => AttachmentData::from([
+                'name' => $data['name'],
+                'size' => Number::fileSize(
+                    bytes: $this->filesystem->size($this->path("{$manifest->uuid}/attachments/{$uuid}")),
+                    precision: 2
+                ),
+                'url' => ''
+            ]))
+            ->values()
+            ->toArray();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function data(): ChannelData
+    {
+        return ChannelData::from([
+            'key' => 'mail',
+            'name' => 'Mail',
+            'type' => ChannelType::Mail
+        ]);
     }
 }

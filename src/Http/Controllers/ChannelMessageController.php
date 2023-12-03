@@ -8,38 +8,45 @@ use Illuminate\Filesystem\Filesystem;
 use Illuminate\Support\Facades\Response;
 use Illuminate\Http\Response as HttpResponse;
 use Foxhound\Http\Resources\MessageListResource;
+use Illuminate\Http\Resources\Json\ResourceCollection;
 
 class ChannelMessageController extends Controller
 {
-    public function index(ChannelManager $manager, Filesystem $filesystem, string $channel)
+    /**
+     * Get a list of messages for a given channel.
+     */
+    public function index(ChannelManager $manager, Filesystem $filesystem, string $channel): ResourceCollection
     {
-        $driver = $manager->driver($channel);
+        $channel = $manager->driver($channel);
 
-        $messages = [];
+        return MessageListResource::collection($channel->messages());
+    }
 
-        foreach ($filesystem->glob($driver->path('*'), GLOB_ONLYDIR) as $path) {
-            if ($manifest = $driver->manifest(basename($path))) {
-                $messages[$manifest->uuid] = $driver->newMessageSummaryData($manifest);
-            }
+    /**
+     * Get the HTML markup for a given message and channel.
+     */
+    public function show(ChannelManager $manager, string $channel, string $uuid): HttpResponse
+    {
+        $channel = $manager->driver($channel);
+
+        if ($manifest = $channel->buildManifest($uuid)) {
+            $manifest->markAsRead();
+            $manifest->save();
+
+            return $channel->response($manifest);
         }
 
-        krsort($messages, SORT_STRING);
-
-        return MessageListResource::collection(array_values($messages));
+        return Response::view('foxhound::404');
     }
 
-    public function show(ChannelManager $manager, Filesystem $filesystem, string $channel, string $uuid)
-    {
-        $driver = $manager->driver($channel);
-
-        dd($driver->manifest($uuid));
-    }
-
+    /**
+     * Delete all messages for a given channel.
+     */
     public function destroy(ChannelManager $manager, Filesystem $filesystem, string $channel): HttpResponse
     {
-        $driver = $manager->driver($channel);
+        $channel = $manager->driver($channel);
 
-        $filesystem->deleteDirectory($driver->path());
+        $channel->deleteMessages();
 
         return Response::noContent();
     }

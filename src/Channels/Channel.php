@@ -2,86 +2,117 @@
 
 namespace Foxhound\Channels;
 
-use RuntimeException;
 use Foxhound\Manifest;
 use Illuminate\Http\Response;
 use Foxhound\Data\ChannelData;
-use Illuminate\Support\Number;
-use Foxhound\Data\AttachmentData;
-use Foxhound\Data\MessageSummaryData;
+use Foxhound\Data\MessageData;
 use Illuminate\Contracts\Filesystem\Filesystem;
 use Illuminate\Notifications\Events\NotificationSending;
 
 abstract class Channel
 {
+    /**
+     * Create a new channel instance.
+     */
     public function __construct(
         protected Filesystem $filesystem,
         protected string $rootStorageDirectory = 'foxhound'
     ) {
     }
 
-    public function manifest(string $uuid): ?Manifest
+    /**
+     * Create a new directory.
+     */
+    public function directory(string $name): self
     {
-        $path = $this->relativePath("{$uuid}/manifest.json");
+        $this->filesystem->makeDirectory(
+            $this->path($name)
+        );
 
-        if ($this->filesystem->exists($path)) {
-            return Manifest::parse($this->filesystem->get($path));
+        return $this;
+    }
+
+    /**
+     * Store a new file.
+     */
+    public function store(string $name, string $contents): self
+    {
+        $this->filesystem->put(
+            $this->path($name),
+            $contents,
+        );
+
+        return $this;
+    }
+
+    /**
+     * Resolve a manifest by its UUID.
+     */
+    public function buildManifest(string $uuid): ?Manifest
+    {
+        $manifest = $this->filesystem->get($this->path("{$uuid}/manifest.json"));
+
+        if ($manifest) {
+            return Manifest::parse($this, $manifest);
+        } else if ($this->filesystem->exists($directory = $this->path($uuid))) {
+            // If the manifest file does not exist, but the directory does, delete the directory.
+            $this->filesystem->deleteDirectory($directory);
         }
-
-        $this->filesystem->deleteDirectory($this->relativePath($uuid));
 
         return null;
     }
 
-    public function make(Manifest $manifest): Manifest
-    {
-        $this->filesystem->makeDirectory(
-            $this->relativePath($manifest->uuid)
-        );
-
-        return $manifest;
-    }
-
-    public function save(Manifest $manifest): void
-    {
-        $this->filesystem->put(
-            "{$this->relativePath($manifest->uuid)}/manifest.json",
-            json_encode($manifest),
-        );
-    }
-
+    /**
+     * Get a relative path for the channel.
+     */
     public function path(string $path = null): string
-    {
-        return $this->filesystem->path(
-            $this->relativePath($path)
-        );
-    }
-
-    public function relativePath(string $path = null): string
     {
         return "{$this->rootStorageDirectory}/{$this->data()->key}/{$path}";
     }
 
-    public function attachments(Manifest $manifest): array
+    /**
+     * Get all messages for a channel.
+     */
+    public function messages(): array
     {
-        return collect($manifest->data['attachments'])
-            ->map(fn (array $data, $uuid) => AttachmentData::from([
-                'name' => $data['name'],
-                'size' => Number::fileSize(
-                    bytes: $this->filesystem->size($this->relativePath("{$manifest->uuid}/attachments/{$uuid}")),
-                    precision: 2
-                ),
-                'url' => ''
-            ]))
-            ->values()
-            ->toArray();
+        $messages = [];
+
+        foreach ($this->filesystem->directories($this->path()) as $path) {
+            if ($manifest = $this->buildManifest(basename($path))) {
+                $messages[$manifest->uuid] = $this->buildMessageData($manifest);
+            }
+        }
+
+        krsort($messages, SORT_STRING);
+
+        return array_values($messages);
     }
 
+    /**
+     * Delete the messages for a channel.
+     */
+    public function deleteMessages(): void
+    {
+        $this->filesystem->deleteDirectory($this->path());
+    }
+
+    /**
+     * Intercept a notification event and build the manifest.
+     */
     abstract public function intercept(NotificationSending $event, Manifest $manifest): void;
 
-    abstract public function newMessageSummaryData(Manifest $manifest): MessageSummaryData;
-
+    /**
+     * Return the response of the stored notification from its manifest.
+     */
     abstract public function response(Manifest $manifest): Response;
 
+    /**
+     * Get the channel data.
+     */
     abstract public function data(): ChannelData;
+
+    /**
+     * Build the message data from a manifest.
+     */
+    abstract public function buildMessageData(Manifest $manifest): MessageData;
 }

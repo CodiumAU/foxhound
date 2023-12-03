@@ -5,15 +5,19 @@ namespace Foxhound\Channels;
 use RuntimeException;
 use Foxhound\Manifest;
 use Foxhound\ChannelType;
-use Illuminate\Http\Response;
 use Foxhound\Data\ChannelData;
+use Foxhound\Data\MessageData;
 use Foxhound\Data\SmsMessageData;
-use Foxhound\Data\MessageSummaryData;
 use Foxhound\Data\MessageRecipientData;
+use Illuminate\Support\Facades\Response;
+use Illuminate\Http\Response as HttpResponse;
 use Illuminate\Notifications\Events\NotificationSending;
 
 class Vonage extends Channel
 {
+    /**
+     * {@inheritDoc}
+     */
     public function intercept(NotificationSending $event, Manifest $manifest): void
     {
         throw_unless(method_exists($event->notification, 'toVonage'), new RuntimeException('Notification does not have a "toVonage" method.'));
@@ -26,9 +30,12 @@ class Vonage extends Channel
         $manifest->data('from', $message->from);
     }
 
-    public function newMessageSummaryData(Manifest $manifest): MessageSummaryData
+    /**
+     * {@inheritDoc}
+     */
+    public function buildMessageData(Manifest $manifest): MessageData
     {
-        return MessageSummaryData::from([
+        return MessageData::from([
             'uuid' => $manifest->uuid,
             'unread' => $manifest->unread,
             'hasAttachments' => false,
@@ -42,12 +49,17 @@ class Vonage extends Channel
         ]);
     }
 
-    public function response(Manifest $manifest): Response
+    /**
+     * {@inheritDoc}
+     */
+    public function response(Manifest $manifest): HttpResponse
     {
-        return response(
-            view('sms', ['message' => $manifest->data['message']])
-        );
+        return Response::view('foxhound::sms', ['message' => $manifest->data['message']]);
     }
+
+    /**
+     * {@inheritDoc}
+     */
     public function data(): ChannelData
     {
         return ChannelData::from([

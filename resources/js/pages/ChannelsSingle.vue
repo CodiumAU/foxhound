@@ -67,7 +67,9 @@ const iframeSource = computed(() => {
     return null
   }
 
-  return http.getUri({ url: `/channels/${props.channel}/${props.uuid}/html` })
+  return http.getUri({
+    url: `/channels/${props.channel}/messages/${props.uuid}`,
+  })
 })
 
 const headerComponent = computed(() => {
