@@ -17,6 +17,7 @@
           <RecipientBadge
             :name="message.data.from.name"
             :address="message.data.from.address"
+            @click="search = `from:${message.data.from.address}`"
           />
         </span>
       </div>

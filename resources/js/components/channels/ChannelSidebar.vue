@@ -102,14 +102,18 @@ const messages = computed(() => {
   let keys = [
     'subject',
     'recipients.address',
+    'data.from.address',
     'data.cc.address',
     'data.bcc.address',
+    'data.replyTo.address',
   ]
 
   const prefixes = {
     to: 'recipients.address',
+    from: 'data.from.address',
     cc: 'data.cc.address',
     bcc: 'data.bcc.address',
+    'reply to': 'data.replyTo.address',
   }
 
   for (const [prefix, key] of Object.entries(prefixes)) {
@@ -123,7 +127,7 @@ const messages = computed(() => {
 
   const fuse = new Fuse(channelsStore.messages, {
     keys,
-    threshold: 0.3,
+    threshold: 0.2,
     ignoreLocation: true,
   })
 
