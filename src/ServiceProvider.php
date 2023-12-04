@@ -19,7 +19,7 @@ class ServiceProvider extends BaseServiceProvider
         }
 
         $this->mergeConfigFrom(
-            path: FOXHOUND_PATH.'/config/foxhound.php', 
+            path: FOXHOUND_PATH.'/config/foxhound.php',
             key: 'foxhound'
         );
     }
@@ -30,30 +30,45 @@ class ServiceProvider extends BaseServiceProvider
     public function boot(): void
     {
         $this->loadViewsFrom(FOXHOUND_PATH.'/resources/views', 'foxhound');
-        
+
         $this->offerPublishing();
-        $this->routes();
-        $this->events();
+        $this->bootRoutes();
+        $this->bootEventListeners();
+        $this->bootCommands();
     }
 
     /**
-     * Define event listeners.
+     * Boot the Foxhound event listeners.
      */
-    protected function events(): void
+    protected function bootEventListeners(): void
     {
         Event::listen(NotificationSending::class, Listeners\NotificationSending\InterceptNotification::class);
     }
 
     /**
-     * Define routes.
+     * Boot the Foxhound routes.
      */
-    protected function routes(): void
+    protected function bootRoutes(): void
     {
         // Group and load the API routes.
         Route::prefix('foxhound/api')->group(fn () => $this->loadRoutesFrom(FOXHOUND_PATH.'/routes/api.php'));
 
         // Define the global Foxhound route for the SPA.
         Route::view('foxhound/{path?}', 'foxhound::index')->where('path', '.*');
+    }
+
+    /**
+     * Boot the Foxhound commands.
+     */
+    protected function bootCommands(): void
+    {
+        if (!$this->app->runningInConsole()) {
+            return;
+        }
+
+        $this->commands([
+            Console\InstallCommand::class,
+        ]);
     }
 
     /**
@@ -64,14 +79,14 @@ class ServiceProvider extends BaseServiceProvider
         if (!$this->app->runningInConsole()) {
             return;
         }
-        
+
         $this->publishes(
-            paths: [FOXHOUND_PATH.'/config/foxhound.php' => config_path('foxhound.php')], 
+            paths: [FOXHOUND_PATH.'/config/foxhound.php' => config_path('foxhound.php')],
             groups: 'foxhound-config'
         );
 
         $this->publishes(
-            paths: [FOXHOUND_PATH.'/public' => public_path('vendor/foxhound')], 
+            paths: [FOXHOUND_PATH.'/public' => public_path('vendor/foxhound')],
             groups: 'foxhound-assets'
         );
     }
