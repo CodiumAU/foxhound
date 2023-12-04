@@ -1,6 +1,6 @@
 <template>
   <a
-    class="shrink-0 inline-flex items-center leading-none gap-x-2 py-2 px-2.5 rounded-lg text-sm font-normal border border-gray-200 bg-white hover:bg-gray-50 text-gray-600 dark:bg-slate-900 dark:hover:bg-slate-800 dark:border-gray-700 dark:text-white max-w-[14rem]"
+    class="shrink-0 inline-flex items-center leading-none gap-x-2 py-2 ps-2.5 pe-3 rounded-lg text-sm font-normal border border-gray-200 bg-white hover:bg-gray-50 text-gray-600 dark:bg-slate-900 dark:hover:bg-slate-800 dark:border-gray-700 dark:text-white max-w-[14rem]"
     :href="attachment.url"
     :title="attachment.name"
     target="_blank"
