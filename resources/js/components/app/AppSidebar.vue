@@ -15,11 +15,21 @@
     <nav class="p-6 w-full flex flex-col flex-wrap">
       <ul class="space-y-1.5">
         <li class="text-base text-slate-300 pb-2 font-semibold">Channels</li>
+
         <AppSidebarChannelItem
           v-for="channel in channels"
           :key="channel.key"
           v-bind="{ channel }"
         />
+
+        <li class="text-base text-slate-300 pb-2 font-semibold">Settings</li>
+
+        <AppSidebarItem
+          :to="{ name: 'settings.storage-cleanup' }"
+          :icon="TrashIcon"
+        >
+          Storage Cleanup
+        </AppSidebarItem>
       </ul>
     </nav>
   </div>
@@ -30,13 +40,19 @@ import { useChannelsStore } from '../../stores/channels'
 import { storeToRefs } from 'pinia'
 import { computed } from 'vue'
 import { useFavicon } from '@vueuse/core'
+import { TrashIcon } from '@heroicons/vue/24/outline'
 import AppSidebarChannelItem from './AppSidebarChannelItem.vue'
+import AppSidebarItem from './AppSidebarItem.vue'
 
 const channelsStore = useChannelsStore()
 const { channels } = storeToRefs(channelsStore)
 
 await channelsStore.getChannels()
 
-const favicon = computed(() => channels.value.some((channel) => channel.unread_messages_count > 0) ? '/vendor/foxhound/img/unread.png' : '/vendor/foxhound/img/read.png')
+const favicon = computed(() =>
+  channels.value.some((channel) => channel.unread_messages_count > 0)
+    ? '/vendor/foxhound/img/unread.png'
+    : '/vendor/foxhound/img/read.png'
+)
 useFavicon(favicon)
 </script>

@@ -8,3 +8,4 @@ Route::get('channels/{channel}/messages', [Controllers\MessageController::class,
 Route::delete('channels/{channel}/messages', [Controllers\MessageController::class, 'destroy']);
 Route::get('channels/{channel}/messages/{uuid}', [Controllers\MessageController::class, 'show']);
 Route::get('channels/{channel}/messages/{message}/attachment/{attachment}', Controllers\AttachmentController::class)->name('foxhound::attachment');
+Route::post('settings/storage-cleanup', Controllers\StorageCleanupController::class);
