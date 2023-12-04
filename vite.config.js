@@ -18,7 +18,7 @@ export default defineConfig({
       },
     }),
     nodePolyfills({
-      include: ['path'],
+      include: ['path', 'fs'],
     }),
   ],
   define: {
