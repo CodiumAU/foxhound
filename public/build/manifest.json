@@ -4,20 +4,8 @@
     "isEntry": true,
     "src": "resources/css/app.css"
   },
-  "resources/img/read.png": {
-    "file": "assets/read-b37b0b9e.png",
-    "src": "resources/img/read.png"
-  },
-  "resources/img/unread.png": {
-    "file": "assets/unread-78331896.png",
-    "src": "resources/img/unread.png"
-  },
   "resources/js/app.ts": {
-    "assets": [
-      "assets/read-b37b0b9e.png",
-      "assets/unread-78331896.png"
-    ],
-    "file": "assets/app-cb25014c.js",
+    "file": "assets/app-6680e879.js",
     "isEntry": true,
     "src": "resources/js/app.ts"
   }
