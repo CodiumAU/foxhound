@@ -15,11 +15,7 @@
         v-bind="{ message }"
       />
 
-      <div
-        class="grow rounded-lg h-full w-full border border-gray-200 dark:border-gray-700 bg-white overflow-hidden"
-      >
-        <iframe v-if="iframeSource" :src="iframeSource" class="w-full h-full" />
-      </div>
+      <Component :is="bodyComponent" v-bind="{ uuid, channel }" />
     </template>
   </PageContainer>
 </template>
@@ -27,12 +23,13 @@
 <script lang="ts" setup>
 import { storeToRefs } from 'pinia'
 import { ChannelType, useChannelsStore } from '../stores/channels'
-import { http } from '../http'
 import { computed, watch } from 'vue'
 import ChannelSidebar from '../components/ChannelSidebar.vue'
 import PageContainer from '../components/PageContainer.vue'
 import ChannelHeaderMail from '../components/ChannelHeaderMail.vue'
 import ChannelHeaderSms from '../components/ChannelHeaderSms.vue'
+import ChannelBodyMail from '../components/mail/ChannelBody.vue'
+import ChannelBodySms from '../components/sms/ChannelBody.vue'
 
 const props = withDefaults(
   defineProps<{
@@ -65,15 +62,6 @@ const channel = computed(() =>
 const message = computed(() =>
   messages.value.find((message) => message.uuid === props.uuid)
 )
-const iframeSource = computed(() => {
-  if (props.uuid === undefined || props.uuid === '') {
-    return null
-  }
-
-  return http.getUri({
-    url: `/channels/${props.channel}/messages/${props.uuid}`,
-  })
-})
 
 const headerComponent = computed(() => {
   if (!channel.value) {
@@ -85,6 +73,21 @@ const headerComponent = computed(() => {
       return ChannelHeaderMail
     case ChannelType.Sms:
       return ChannelHeaderSms
+    default:
+      return null
+  }
+})
+
+const bodyComponent = computed(() => {
+  if (!channel.value) {
+    return null
+  }
+
+  switch (channel.value.type) {
+    case ChannelType.Mail:
+      return ChannelBodyMail
+    case ChannelType.Sms:
+      return ChannelBodySms
     default:
       return null
   }

@@ -1,4 +1,5 @@
 import { defineConfig } from 'vite'
+import { nodePolyfills } from 'vite-plugin-node-polyfills'
 import laravel from 'laravel-vite-plugin'
 import vue from '@vitejs/plugin-vue'
 
@@ -16,7 +17,13 @@ export default defineConfig({
         },
       },
     }),
+    nodePolyfills({
+      include: ['path'],
+    }),
   ],
+  define: {
+    'process.env': {},
+  },
   server: {
     hmr: {
       host: 'localhost',
