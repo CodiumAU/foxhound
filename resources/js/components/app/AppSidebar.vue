@@ -31,14 +31,12 @@ import { storeToRefs } from 'pinia'
 import { computed } from 'vue'
 import { useFavicon } from '@vueuse/core'
 import AppSidebarChannelItem from './AppSidebarChannelItem.vue'
-import FaviconRead from '../../../img/read.png'
-import FaviconUnread from '../../../img/unread.png'
 
 const channelsStore = useChannelsStore()
 const { channels } = storeToRefs(channelsStore)
 
 await channelsStore.getChannels()
 
-const favicon = computed(() => channels.value.some((channel) => channel.unread_messages_count > 0) ? FaviconUnread : FaviconRead)
+const favicon = computed(() => channels.value.some((channel) => channel.unread_messages_count > 0) ? '/vendor/foxhound/img/unread.png' : '/vendor/foxhound/img/read.png')
 useFavicon(favicon)
 </script>
