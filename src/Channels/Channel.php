@@ -88,11 +88,11 @@ abstract class Channel
 
         foreach ($this->filesystem->directories($this->path()) as $path) {
             if ($manifest = $this->buildManifest(basename($path))) {
-                $messages[$manifest->uuid] = $this->buildMessageData($manifest);
+                $messages[] = $this->buildMessageData($manifest);
             }
         }
 
-        krsort($messages, SORT_STRING);
+        usort($messages, fn ($a, $b) => $b->sentAt <=> $a->sentAt);
 
         return array_values($messages);
     }
