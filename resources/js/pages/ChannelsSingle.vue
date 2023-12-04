@@ -129,11 +129,15 @@ function updateUnreadMessagesCount() {
 // Periodically fetch messages.
 const timeout = ref<number>()
 
-onMounted(async () => {
+watch(channel, async () => {
+  if (timeout.value) {
+    clearTimeout(timeout.value)
+  }
+
   timeout.value = setTimeout(async () => {
     await Promise.all([channelsStore.getMessages(props.channel), channelsStore.getChannels()])
   }, 5000)
-})
+}, { immediate: true })
 
 onBeforeUnmount(() => {
   clearTimeout(timeout.value)
