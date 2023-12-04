@@ -49,7 +49,7 @@ class Mail extends Channel
         $mail = $event->notification->toMail($event->notifiable);
 
         // Generate and store the rendered mail.
-        $this->store("{$manifest->uuid}/index.html", $mail->render());
+        $this->store("{$manifest->uuid}/index.html", $this->forceBlankBaseTarget($mail->render()));
 
         $manifest->data('subject', $this->subject($event, $mail));
         $manifest->data('from', $this->from($event, $mail));
@@ -268,5 +268,13 @@ class Mail extends Channel
             'type' => ChannelType::Mail,
             'unreadMessagesCount' => $this->unreadMessagesCount(),
         ]);
+    }
+
+    /**
+     * Forces the base target to be blank to avoid links opening in the iframe.
+     */
+    protected function forceBlankBaseTarget(string $html): string
+    {
+        return str_replace('<head>', '<head><base target="_blank">', $html);
     }
 }
