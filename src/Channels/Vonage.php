@@ -63,9 +63,10 @@ class Vonage extends Channel
     public function data(): ChannelData
     {
         return ChannelData::from([
-            'key' => 'vonage',
+            'key' => $this->key,
             'name' => 'Vonage',
-            'type' => ChannelType::Sms
+            'type' => ChannelType::Sms,
+            'unreadMessagesCount' => $this->unreadMessagesCount(),
         ]);
     }
 }

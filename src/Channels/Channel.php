@@ -16,6 +16,7 @@ abstract class Channel
      */
     public function __construct(
         protected Filesystem $filesystem,
+        protected string $key,
         protected string $rootStorageDirectory = 'foxhound'
     ) {
     }
@@ -75,7 +76,7 @@ abstract class Channel
      */
     public function path(string $path = null): string
     {
-        return "{$this->rootStorageDirectory}/{$this->data()->key}/{$path}";
+        return "{$this->rootStorageDirectory}/{$this->key}/{$path}";
     }
 
     /**
@@ -102,6 +103,14 @@ abstract class Channel
     public function deleteMessages(): void
     {
         $this->filesystem->deleteDirectory($this->path());
+    }
+
+    /**
+     * Get a count of unread messages for the channel.
+     */
+    protected function unreadMessagesCount(): int
+    {
+        return array_reduce($this->messages(), fn ($count, MessageData $message) => $count + ($message->unread ? 1 : 0), 0);
     }
 
     /**

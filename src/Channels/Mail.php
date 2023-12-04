@@ -248,7 +248,7 @@ class Mail extends Channel
                     precision: 2
                 ),
                 'url' => URL::route('foxhound::attachment', [
-                    'channel' => $this->data()->key,
+                    'channel' => $this->key,
                     'message' => $manifest->uuid,
                     'attachment' => $uuid,
                 ]),
@@ -263,9 +263,10 @@ class Mail extends Channel
     public function data(): ChannelData
     {
         return ChannelData::from([
-            'key' => 'mail',
+            'key' => $this->key,
             'name' => 'Mail',
-            'type' => ChannelType::Mail
+            'type' => ChannelType::Mail,
+            'unreadMessagesCount' => $this->unreadMessagesCount(),
         ]);
     }
 }

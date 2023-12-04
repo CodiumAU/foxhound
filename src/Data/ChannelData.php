@@ -14,6 +14,7 @@ class ChannelData extends Data
         public string $name,
         #[WithCast(EnumCast::class)]
         public ChannelType $type,
+        public int $unreadMessagesCount
     ) {
     }
 }

@@ -23,7 +23,7 @@ class ChannelManager extends Manager
 
     public function createMailDriver(): Channels\Mail
     {
-        $channel = $this->createChannelDriver(Channels\Mail::class);
+        $channel = $this->createChannelDriver('mail', Channels\Mail::class);
 
         foreach (['from', 'to', 'reply_to'] as $key) {
             $address = $this->container['config']["mail.{$key}"] ?? null;
@@ -38,13 +38,14 @@ class ChannelManager extends Manager
 
     public function createVonageDriver(): Channels\Vonage
     {
-        return $this->createChannelDriver(Channels\Vonage::class);
+        return $this->createChannelDriver('vonage', Channels\Vonage::class);
     }
 
-    protected function createChannelDriver(string $class): Channel
+    protected function createChannelDriver(string $key, string $class): Channel
     {
         return new $class(
             filesystem: $this->container['filesystem']->disk(),
+            key: $key,
             rootStorageDirectory: 'foxhound',
         );
     }

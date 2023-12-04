@@ -1,6 +1,10 @@
 <template>
   <AppSidebarItem v-if="icon" v-bind="{ to, icon }">
     {{ channel.name }}
+
+    <span v-if="channel.unread_messages_count > 0" class="ms-auto py-1 px-2 rounded-full text-xs leading-none bg-red-500 text-white">
+      {{ channel.unread_messages_count }}
+    </span>
   </AppSidebarItem>
 </template>
 

@@ -48,6 +48,7 @@ export type ChannelListResource = {
   key: string
   name: string
   type: ChannelType
+  unread_messages_count: number
 }
 
 export type MessageListResource = {

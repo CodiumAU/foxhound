@@ -18,6 +18,7 @@ class ChannelListResource extends JsonResource
             'key' => $this->key,
             'name' => $this->name,
             'type' => $this->type,
+            'unread_messages_count' => $this->unreadMessagesCount,
         ];
     }
 }
