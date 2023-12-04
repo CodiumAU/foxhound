@@ -13,7 +13,8 @@
 </template>
 
 <script lang="ts" setup>
-import { nextTick, watch } from 'vue'
+import { nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue'
+import { useChannelsStore } from './stores/channels'
 import { HSAccordion, HSDropdown, HSOverlay, HSTabs } from 'preline'
 import { useRoute } from 'vue-router'
 import AppHeader from './components/app/AppHeader.vue'
@@ -33,4 +34,22 @@ watch(
   },
   { immediate: true }
 )
+
+// Setup a timeout to periodically fetch the channels to get unread messages count.
+const channelsStore = useChannelsStore()
+const timeout = ref<number>()
+
+onMounted(() => {
+  if (timeout.value) {
+    clearTimeout(timeout.value)
+  }
+
+  timeout.value = setTimeout(async () => {
+    await channelsStore.getChannels()
+  }, 5000)
+})
+
+onBeforeUnmount(() => {
+  clearTimeout(timeout.value)
+})
 </script>

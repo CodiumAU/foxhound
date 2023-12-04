@@ -139,10 +139,7 @@ watch(
     }
 
     timeout.value = setTimeout(async () => {
-      await Promise.all([
-        channelsStore.getMessages(props.channel),
-        channelsStore.getChannels(),
-      ])
+      await channelsStore.getMessages(props.channel)
     }, 5000)
   },
   { immediate: true }
