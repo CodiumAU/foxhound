@@ -4,5 +4,6 @@
 /vendor
 .phpunit.result.cache
 npm-debug.log
+composer.lock
 /.fleet
 /.idea
