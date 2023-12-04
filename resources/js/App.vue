@@ -35,21 +35,21 @@ watch(
   { immediate: true }
 )
 
-// Setup a timeout to periodically fetch the channels to get unread messages count.
+// Setup an interval to periodically fetch the channels to get unread messages count.
 const channelsStore = useChannelsStore()
-const timeout = ref<number>()
+const interval = ref<number>()
 
 onMounted(() => {
-  if (timeout.value) {
-    clearTimeout(timeout.value)
+  if (interval.value) {
+    clearInterval(interval.value)
   }
 
-  timeout.value = setTimeout(async () => {
+  interval.value = setInterval(async () => {
     await channelsStore.getChannels()
   }, 5000)
 })
 
 onBeforeUnmount(() => {
-  clearTimeout(timeout.value)
+  clearInterval(interval.value)
 })
 </script>
