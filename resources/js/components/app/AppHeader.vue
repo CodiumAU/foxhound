@@ -16,13 +16,11 @@
           <Bars3Icon class="h-5 w-5 flex-shrink-0" />
         </AppHeaderButton>
 
-        <a
-          class="flex-none text-2xl font-serif font-semibold dark:text-white"
-          href="#"
-          aria-label="Brand"
+        <span
+          class="flex-none text-2xl font-serif font-semibold text-slate-800 dark:text-white"
         >
           foxhound
-        </a>
+        </span>
       </div>
 
       <div
