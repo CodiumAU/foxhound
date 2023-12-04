@@ -1,6 +1,8 @@
-name: NodeJS with Webpack
+name: Compile Assets
 
-on: ['push']
+on:
+  push:
+    paths: ['resources/**']
 
 jobs:
   build:
