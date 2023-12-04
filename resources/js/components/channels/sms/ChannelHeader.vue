@@ -9,7 +9,7 @@
       class="max-h-32 xl:max-h-full box-content inline-flex items-center gap-x-2 py-3 px-4 text-sm border border-t-0 text-gray-800 -mt-px first:rounded-t-lg first:mt-0 last:rounded-b-lg bg-white dark:bg-gray-800 dark:border-gray-700 dark:text-gray-200"
     >
       <div
-        class="h-full w-full grid grid-cols-12 gap-4 items-center overflow-y-scroll"
+        class="h-full w-full grid grid-cols-12 gap-4 items-center overflow-y-auto"
       >
         <span class="col-span-12 flex flex-wrap gap-0.5">
           <template v-for="(segments, number) in segmentedMessage.segments">
