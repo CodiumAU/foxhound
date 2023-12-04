@@ -1,5 +1,5 @@
 <template>
-  <iframe :src="iframeSource" class="w-full h-full" />
+  <iframe :src="iframeSource" class="w-full h-full bg-white" />
 </template>
 
 <script lang="ts" setup>

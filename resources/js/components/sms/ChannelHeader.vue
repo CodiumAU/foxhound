@@ -35,9 +35,9 @@
 
 <script lang="ts" setup>
 import { SegmentedMessage } from 'sms-segments-calculator'
-import type { MessageListResource } from '../stores/channels'
-import SmsSegmentBadge from './SmsSegmentBadge.vue'
 import { shallowRef, watch } from 'vue'
+import type { MessageListResource } from '../../stores/channels'
+import SmsSegmentBadge from '../SmsSegmentBadge.vue'
 
 const props = defineProps<{
   message: MessageListResource

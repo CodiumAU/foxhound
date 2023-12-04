@@ -26,9 +26,9 @@ import { ChannelType, useChannelsStore } from '../stores/channels'
 import { computed, watch } from 'vue'
 import ChannelSidebar from '../components/ChannelSidebar.vue'
 import PageContainer from '../components/PageContainer.vue'
-import ChannelHeaderMail from '../components/ChannelHeaderMail.vue'
-import ChannelHeaderSms from '../components/ChannelHeaderSms.vue'
+import ChannelHeaderMail from '../components/mail/ChannelHeader.vue'
 import ChannelBodyMail from '../components/mail/ChannelBody.vue'
+import ChannelHeaderSms from '../components/sms/ChannelHeader.vue'
 import ChannelBodySms from '../components/sms/ChannelBody.vue'
 
 const props = withDefaults(
