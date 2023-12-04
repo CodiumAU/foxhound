@@ -23,7 +23,7 @@
 <script lang="ts" setup>
 import { storeToRefs } from 'pinia'
 import { ChannelType, useChannelsStore } from '../stores/channels'
-import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue'
+import { computed, onBeforeUnmount, ref, watch } from 'vue'
 import ChannelSidebar from '../components/channels/ChannelSidebar.vue'
 import PageContainer from '../components/common/PageContainer.vue'
 import ChannelHeaderMail from '../components/channels/mail/ChannelHeader.vue'
@@ -108,7 +108,6 @@ function markMessageAsRead(uuid?: string) {
 
   // Set the count of unread messages on the channel state.
   updateUnreadMessagesCount()
-
 }
 
 function updateUnreadMessagesCount() {
@@ -121,7 +120,10 @@ function updateUnreadMessagesCount() {
     1,
     {
       ...channel.value,
-      unread_messages_count: messages.value.reduce((count, { unread }) => count + (unread ? 1 : 0), 0)
+      unread_messages_count: messages.value.reduce(
+        (count, { unread }) => count + (unread ? 1 : 0),
+        0
+      ),
     }
   )
 }
@@ -129,15 +131,22 @@ function updateUnreadMessagesCount() {
 // Periodically fetch messages.
 const timeout = ref<number>()
 
-watch(channel, async () => {
-  if (timeout.value) {
-    clearTimeout(timeout.value)
-  }
+watch(
+  channel,
+  async () => {
+    if (timeout.value) {
+      clearTimeout(timeout.value)
+    }
 
-  timeout.value = setTimeout(async () => {
-    await Promise.all([channelsStore.getMessages(props.channel), channelsStore.getChannels()])
-  }, 5000)
-}, { immediate: true })
+    timeout.value = setTimeout(async () => {
+      await Promise.all([
+        channelsStore.getMessages(props.channel),
+        channelsStore.getChannels(),
+      ])
+    }, 5000)
+  },
+  { immediate: true }
+)
 
 onBeforeUnmount(() => {
   clearTimeout(timeout.value)

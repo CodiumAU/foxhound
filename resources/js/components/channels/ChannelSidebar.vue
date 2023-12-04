@@ -159,7 +159,7 @@ async function clearMessages() {
 }
 
 watch(
-  () => props.channel,
+  () => props.channel.key,
   () => {
     search.value = null
   }
