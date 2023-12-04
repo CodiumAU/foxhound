@@ -4,6 +4,8 @@
 
 Foxhound is a lightweight notification intercepting package providing developers with a simple way to intercept and preview notifications during development.
 
+![](art/screenshot.png)
+
 ## Installation
 
 You can install the package vis Composer:
