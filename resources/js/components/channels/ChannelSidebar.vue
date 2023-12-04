@@ -70,16 +70,19 @@
 
 <script lang="ts" setup>
 import { storeToRefs } from 'pinia'
-import { useChannelsStore, type ChannelListResource } from '../stores/channels'
+import {
+  useChannelsStore,
+  type ChannelListResource,
+} from '../../stores/channels'
 import { Cog6ToothIcon } from '@heroicons/vue/24/outline'
 import { MagnifyingGlassIcon } from '@heroicons/vue/20/solid'
-import { useAlert } from '../composables/use-alert'
+import { useAlert } from '../../composables/use-alert'
 import { useRouter } from 'vue-router'
 import { computed, watch } from 'vue'
 import ChannelSidebarItem from './ChannelSidebarItem.vue'
-import DropdownMenu from './DropdownMenu.vue'
-import DropdownMenuItem from './DropdownMenuItem.vue'
-import IconButton from './IconButton.vue'
+import DropdownMenu from '../common/DropdownMenu.vue'
+import DropdownMenuItem from '../common/DropdownMenuItem.vue'
+import IconButton from '../common/IconButton.vue'
 import Fuse from 'fuse.js'
 
 const props = defineProps<{

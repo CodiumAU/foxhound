@@ -13,11 +13,11 @@
 </template>
 
 <script lang="ts" setup>
-import { useRoute } from 'vue-router'
-import AppHeader from './components/AppHeader.vue'
-import AppSidebar from './components/AppSidebar.vue'
 import { nextTick, watch } from 'vue'
 import { HSAccordion, HSDropdown, HSOverlay, HSTabs } from 'preline'
+import { useRoute } from 'vue-router'
+import AppHeader from './components/app/AppHeader.vue'
+import AppSidebar from './components/app/AppSidebar.vue'
 
 const route = useRoute()
 

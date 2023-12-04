@@ -1,7 +1,7 @@
 import {
   default as ModalDialog,
   type Props,
-} from '../components/ModalDialog.vue'
+} from '../components/common/ModalDialog.vue'
 import { createApp } from 'vue'
 
 export function useAlert(options: Omit<Props, 'onResponse'>): Promise<boolean> {

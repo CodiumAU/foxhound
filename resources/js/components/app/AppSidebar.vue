@@ -26,7 +26,7 @@
 </template>
 
 <script lang="ts" setup>
-import { useChannelsStore } from '../stores/channels'
+import { useChannelsStore } from '../../stores/channels'
 import { storeToRefs } from 'pinia'
 import AppSidebarChannelItem from './AppSidebarChannelItem.vue'
 

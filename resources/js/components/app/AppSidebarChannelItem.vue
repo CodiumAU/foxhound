@@ -1,12 +1,12 @@
 <template>
-  <AppSidebarItem v-if="icon" v-bind="{ to, icon }">{{
-    channel.name
-  }}</AppSidebarItem>
+  <AppSidebarItem v-if="icon" v-bind="{ to, icon }">
+    {{ channel.name }}
+  </AppSidebarItem>
 </template>
 
 <script lang="ts" setup>
 import { computed, toRefs } from 'vue'
-import { ChannelType, type ChannelListResource } from '../stores/channels'
+import { ChannelType, type ChannelListResource } from '../../stores/channels'
 import { EnvelopeIcon, DevicePhoneMobileIcon } from '@heroicons/vue/24/solid'
 import AppSidebarItem from './AppSidebarItem.vue'
 

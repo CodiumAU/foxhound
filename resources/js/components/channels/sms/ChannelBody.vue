@@ -10,7 +10,7 @@
 </template>
 
 <script lang="ts" setup>
-import { type ChannelListResource } from '../../stores/channels'
+import { type ChannelListResource } from '../../../stores/channels'
 import ChannelBodyIframe from '../ChannelBodyIframe.vue'
 
 defineProps<{

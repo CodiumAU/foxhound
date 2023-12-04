@@ -4,7 +4,7 @@
 
 <script lang="ts" setup>
 import { computed } from 'vue'
-import { http } from '../http'
+import { http } from '../../http'
 
 const props = defineProps<{
   uuid: string

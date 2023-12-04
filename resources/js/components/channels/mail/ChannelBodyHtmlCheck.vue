@@ -69,7 +69,7 @@
 
 <script lang="ts" setup>
 import { doIUseEmail } from '@jsx-email/doiuse-email'
-import { http } from '../../http'
+import { http } from '../../../http'
 import { computed, ref, watch } from 'vue'
 import { MinusIcon, PlusIcon } from '@heroicons/vue/24/outline'
 

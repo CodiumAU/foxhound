@@ -71,7 +71,7 @@
 
 <script lang="ts" setup>
 import { nextTick, ref, watch } from 'vue'
-import { type ChannelListResource } from '../../stores/channels'
+import { type ChannelListResource } from '../../../stores/channels'
 import ChannelBodyIframe from '../ChannelBodyIframe.vue'
 import ChannelBodyHtmlCheck from './ChannelBodyHtmlCheck.vue'
 import { HSTabs } from 'preline'

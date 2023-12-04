@@ -60,11 +60,11 @@ import { computed } from 'vue'
 import {
   useChannelsStore,
   type MessageListResource,
-} from '../../stores/channels'
+} from '../../../stores/channels'
 import { format, parseISO } from 'date-fns'
 import { storeToRefs } from 'pinia'
-import RecipientBadge from '../RecipientBadge.vue'
-import AttachmentBadge from '../AttachmentBadge.vue'
+import RecipientBadge from './RecipientBadge.vue'
+import AttachmentBadge from './AttachmentBadge.vue'
 
 const props = defineProps<{
   message: MessageListResource

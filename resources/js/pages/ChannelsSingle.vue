@@ -24,12 +24,12 @@
 import { storeToRefs } from 'pinia'
 import { ChannelType, useChannelsStore } from '../stores/channels'
 import { computed, watch } from 'vue'
-import ChannelSidebar from '../components/ChannelSidebar.vue'
-import PageContainer from '../components/PageContainer.vue'
-import ChannelHeaderMail from '../components/mail/ChannelHeader.vue'
-import ChannelBodyMail from '../components/mail/ChannelBody.vue'
-import ChannelHeaderSms from '../components/sms/ChannelHeader.vue'
-import ChannelBodySms from '../components/sms/ChannelBody.vue'
+import ChannelSidebar from '../components/channels/ChannelSidebar.vue'
+import PageContainer from '../components/common/PageContainer.vue'
+import ChannelHeaderMail from '../components/channels/mail/ChannelHeader.vue'
+import ChannelBodyMail from '../components/channels/mail/ChannelBody.vue'
+import ChannelHeaderSms from '../components/channels/sms/ChannelHeader.vue'
+import ChannelBodySms from '../components/channels/sms/ChannelBody.vue'
 
 const props = withDefaults(
   defineProps<{
@@ -59,6 +59,7 @@ watch(() => props.uuid, markMessageAsRead)
 const channel = computed(() =>
   channels.value.find((channel) => channel.key === props.channel)
 )
+
 const message = computed(() =>
   messages.value.find((message) => message.uuid === props.uuid)
 )

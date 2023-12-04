@@ -53,7 +53,7 @@ import { computed, onMounted, ref } from 'vue'
 import type {
   ChannelListResource,
   MessageListResource,
-} from '../stores/channels'
+} from '../../stores/channels'
 import { parseISO, formatDistanceToNowStrict } from 'date-fns'
 import { PaperClipIcon } from '@heroicons/vue/20/solid'
 
