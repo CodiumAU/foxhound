@@ -29,12 +29,24 @@ class ServiceProvider extends BaseServiceProvider
      */
     public function boot(): void
     {
-        $this->loadViewsFrom(FOXHOUND_PATH.'/resources/views', 'foxhound');
+        $this->bootCommands();
+        $this->bootPublishing();
 
-        $this->offerPublishing();
+        if (! config('foxhound.enabled')) {
+            return;
+        }
+
+        $this->bootViews();
         $this->bootRoutes();
         $this->bootEventListeners();
-        $this->bootCommands();
+    }
+
+    /**
+     * Boot the Foxhound views.
+     */
+    protected function bootViews(): void
+    {
+        $this->loadViewsFrom(FOXHOUND_PATH.'/resources/views', 'foxhound');
     }
 
     /**
@@ -72,9 +84,9 @@ class ServiceProvider extends BaseServiceProvider
     }
 
     /**
-     * Offers publishing for assets and configuration when running in console.
+     * Boot publishing for assets and configuration when running in console.
      */
-    protected function offerPublishing(): void
+    protected function bootPublishing(): void
     {
         if (!$this->app->runningInConsole()) {
             return;
