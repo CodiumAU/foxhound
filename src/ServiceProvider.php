@@ -32,7 +32,7 @@ class ServiceProvider extends BaseServiceProvider
         $this->bootCommands();
         $this->bootPublishing();
 
-        if (! config('foxhound.enabled')) {
+        if (!config('foxhound.enabled') || !in_array($this->app->environment(), config('foxhound.environments'))) {
             return;
         }
 
