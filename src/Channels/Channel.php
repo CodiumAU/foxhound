@@ -2,6 +2,7 @@
 
 namespace Foxhound\Channels;
 
+use Exception;
 use Foxhound\Manifest;
 use Illuminate\Http\Response;
 use Foxhound\Data\ChannelData;
@@ -62,8 +63,16 @@ abstract class Channel
         $manifest = $this->filesystem->get($this->path("{$uuid}/manifest.json"));
 
         if ($manifest) {
-            return Manifest::parse($this, $manifest);
-        } else if ($this->filesystem->exists($directory = $this->path($uuid))) {
+            try {
+                return Manifest::parse($this, $manifest);
+            } catch (Exception) {
+                // If the manifest file exists, but is invalid, we'll do nothing and just delete the directory instead. This can
+                // happen if the manifest file contains a notification that is no longer valid or contains models that no longer
+                // exist in the database.
+            }
+        }
+
+        if ($this->filesystem->exists($directory = $this->path($uuid))) {
             // If the manifest file does not exist, but the directory does, delete the directory.
             $this->filesystem->deleteDirectory($directory);
         }
