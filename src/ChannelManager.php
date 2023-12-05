@@ -11,16 +11,25 @@ use Illuminate\Support\Manager;
  */
 class ChannelManager extends Manager
 {
+    /**
+     * Get the default driver.
+     */
     public function getDefaultDriver(): string
     {
         return 'mail';
     }
 
+    /**
+     * Alias for getting a driver.
+     */
     public function channel(?string $channel): Channel
     {
         return $this->driver($channel);
     }
 
+    /**
+     * Create the mail driver.
+     */
     public function createMailDriver(): Channels\Mail
     {
         $channel = $this->createChannelDriver('mail', Channels\Mail::class);
@@ -36,11 +45,17 @@ class ChannelManager extends Manager
         return $channel;
     }
 
+    /**
+     * Create the Vonage driver.
+     */
     public function createVonageDriver(): Channels\Vonage
     {
         return $this->createChannelDriver('vonage', Channels\Vonage::class);
     }
 
+    /**
+     * Create a new channel driver.
+     */
     protected function createChannelDriver(string $key, string $class): Channel
     {
         return new $class(
