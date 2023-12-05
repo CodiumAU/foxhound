@@ -132,7 +132,7 @@ function updateUnreadMessagesCount() {
 const interval = ref<number>()
 
 watch(
-  channel,
+  () => props.channel,
   async () => {
     if (interval.value) {
       clearInterval(interval.value)
