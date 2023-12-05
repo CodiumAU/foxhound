@@ -43,6 +43,7 @@ const props = withDefaults(
 
 const channelsStore = useChannelsStore()
 const { messages, channels } = storeToRefs(channelsStore)
+const interval = ref<number>()
 
 watch(
   () => props.channel,
@@ -50,9 +51,21 @@ watch(
     await channelsStore.getMessages(props.channel)
 
     markMessageAsRead(props.uuid)
+
+    if (interval.value) {
+      clearInterval(interval.value)
+    }
+
+    interval.value = setInterval(async () => {
+      await channelsStore.getMessages(props.channel)
+    }, 5000)
   },
   { immediate: true }
 )
+
+onBeforeUnmount(() => {
+  clearInterval(interval.value)
+})
 
 watch(() => props.uuid, markMessageAsRead)
 
@@ -127,25 +140,4 @@ function updateUnreadMessagesCount() {
     }
   )
 }
-
-// Periodically fetch messages.
-const interval = ref<number>()
-
-watch(
-  () => props.channel,
-  async () => {
-    if (interval.value) {
-      clearInterval(interval.value)
-    }
-
-    interval.value = setInterval(async () => {
-      await channelsStore.getMessages(props.channel)
-    }, 5000)
-  },
-  { immediate: true }
-)
-
-onBeforeUnmount(() => {
-  clearInterval(interval.value)
-})
 </script>
