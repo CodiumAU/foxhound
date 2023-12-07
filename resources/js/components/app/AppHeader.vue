@@ -1,12 +1,12 @@
 <template>
   <header
-    class="sticky top-0 inset-x-0 flex flex-wrap sm:justify-start sm:flex-nowrap z-[48] w-full bg-white border-b text-sm py-2.5 sm:py-4 lg:ps-64 dark:bg-gray-800 dark:border-gray-700"
+    class="sticky top-0 inset-x-0 flex flex-wrap sm:justify-start sm:flex-nowrap z-[48] w-full bg-white border-b text-sm py-2.5 sm:py-4 xl:ps-64 dark:bg-gray-800 dark:border-gray-700"
   >
     <nav
       class="flex basis-full items-center w-full mx-auto px-4 md:px-6"
       aria-label="Global"
     >
-      <div class="me-5 lg:me-0 lg:hidden flex items-center gap-2">
+      <div class="me-5 xl:me-0 xl:hidden flex items-center gap-2">
         <AppHeaderButton
           data-hs-overlay="#application-sidebar"
           aria-controls="application-sidebar"

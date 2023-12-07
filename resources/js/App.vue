@@ -5,7 +5,7 @@
     <AppSidebar />
   </Suspense>
 
-  <div class="w-full h-full min-h-full lg:ps-64 flex flex-1">
+  <div class="w-full h-full min-h-full xl:ps-[40rem] flex flex-1">
     <Suspense>
       <RouterView />
     </Suspense>
@@ -31,6 +31,13 @@ watch(
     HSDropdown.autoInit()
     HSTabs.autoInit()
     HSAccordion.autoInit()
+
+    // Close all overlays when the route changes.
+    const overlays = document.querySelectorAll('[data-hs-overlay]')
+
+    overlays.forEach((overlay) => {
+      HSOverlay.close(overlay as HTMLElement)
+    })
   },
   { immediate: true }
 )

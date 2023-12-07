@@ -2,6 +2,15 @@
   <ChannelSidebar v-if="channel" v-bind="{ channel }" />
 
   <PageContainer>
+    <button
+      type="button"
+      class="grow py-3 px-4 mb-4 flex xl:hidden items-center gap-x-2 text-normal font-medium rounded-lg border border-gray-200 bg-white text-gray-800 shadow-sm hover:bg-gray-50 disabled:opacity-50 disabled:pointer-events-none dark:bg-slate-900 dark:border-gray-700 dark:text-white dark:hover:bg-gray-800 dark:focus:outline-none dark:focus:ring-1 dark:focus:ring-gray-600"
+      data-hs-overlay="#channel-sidebar"
+    >
+      <QueueListIcon class="h-6 w-6 flex-shrink-0" />
+      Messages
+    </button>
+
     <div
       v-if="uuid === undefined || uuid === ''"
       class="grow flex items-center justify-center h-full text-2xl font-light text-gray-500 dark:text-slate-400"
@@ -24,6 +33,7 @@
 import { storeToRefs } from 'pinia'
 import { ChannelType, useChannelsStore } from '../stores/channels'
 import { computed, onBeforeUnmount, ref, watch } from 'vue'
+import { QueueListIcon } from '@heroicons/vue/24/outline'
 import ChannelSidebar from '../components/channels/ChannelSidebar.vue'
 import PageContainer from '../components/common/PageContainer.vue'
 import ChannelHeaderMail from '../components/channels/mail/ChannelHeader.vue'
