@@ -1,13 +1,12 @@
 <template>
   <select
     id="tab-select"
-    class="sm:hidden py-3 px-4 pe-9 block w-full border-gray-200 rounded-lg text-sm focus:border-blue-500 focus:ring-blue-500 dark:bg-slate-900 dark:border-gray-700 dark:text-gray-400"
+    class="sm:hidden py-3 px-4 pe-9 block w-full border-gray-200 rounded-lg rounded-b-none text-sm focus:border-blue-500 focus:ring-blue-500 dark:bg-slate-900 dark:border-gray-700 dark:text-gray-400"
     aria-label="Tabs"
     role="tablist"
   >
-    <option value="#preview">Tab 1</option>
-    <option value="#html-check">Tab 2</option>
-    <option value="#hs-tab-to-select-3">Tab 3</option>
+    <option value="#preview">Preview</option>
+    <option value="#html-check">HTML Check</option>
   </select>
 
   <div class="hidden sm:block border-b border-gray-200 dark:border-gray-700">
