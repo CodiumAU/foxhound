@@ -38,4 +38,25 @@ return [
     */
     'enabled' => env('FOXHOUND_ENABLED', true),
 
+    /*
+    |--------------------------------------------------------------------------
+    | Storage Driver
+    |--------------------------------------------------------------------------
+    |
+    | Configure how Foxhound stores the intercepted notifications.
+    |
+    */
+    'storage' => [
+        'driver' => env('FOXHOUND_STORAGE_DRIVER', 'filesystem'),
+
+        'database' => [
+            'connection' => env('FOXHOUND_DB_CONNECTION', null),
+        ],
+
+        'filesystem' => [
+            'disk' => env('FOXHOUND_STORAGE_DISK', 'local'),
+            'root' => 'foxhound',
+        ]
+    ]
+
 ];

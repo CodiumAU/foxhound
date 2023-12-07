@@ -2,8 +2,11 @@
 
 namespace Foxhound;
 
+use Foxhound\Contracts\Storage;
+use Foxhound\Storage\DatabaseStorage;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Route;
+use Foxhound\Storage\FilesystemStorage;
 use Illuminate\Notifications\Events\NotificationSending;
 use Illuminate\Support\ServiceProvider as BaseServiceProvider;
 
@@ -22,6 +25,15 @@ class ServiceProvider extends BaseServiceProvider
             path: FOXHOUND_PATH.'/config/foxhound.php',
             key: 'foxhound'
         );
+
+        if ($this->disabled()) {
+            return;
+        }
+
+        $this->app->bind(Storage::class, fn () => match ($this->app->make('config')->get('foxhound.storage.driver')) {
+            'filesystem' => $this->createFilesystemStorage(),
+            'database' => $this->createDatabaseStorage()
+        });
     }
 
     /**
@@ -32,7 +44,7 @@ class ServiceProvider extends BaseServiceProvider
         $this->bootCommands();
         $this->bootPublishing();
 
-        if (!config('foxhound.enabled') || !in_array($this->app->environment(), config('foxhound.environments'))) {
+        if ($this->disabled()) {
             return;
         }
 
@@ -100,6 +112,41 @@ class ServiceProvider extends BaseServiceProvider
         $this->publishes(
             paths: [FOXHOUND_PATH.'/public' => public_path('vendor/foxhound')],
             groups: 'foxhound-assets'
+        );
+
+        $this->publishes(
+            paths: [FOXHOUND_PATH.'/database/migrations' => database_path('migrations')],
+            groups: 'foxhound-migrations'
+        );
+    }
+
+    /**
+     * Determine if Foxhound is disabled.
+     */
+    protected function disabled(): bool
+    {
+        return !$this->app->make('config')->get('foxhound.enabled') || !in_array($this->app->environment(), $this->app->make('config')->get('foxhound.environments'));
+    }
+
+    /**
+     * Create a filesystems torage instance.
+     */
+    protected function createFilesystemStorage(): FilesystemStorage
+    {
+        return new FilesystemStorage(
+            filesystem: $this->app->make('filesystem')->disk($this->app->make('config')->get('foxhound.storage.filesystem.disk')),
+            rootStorageDirectory: $this->app->make('config')->get('foxhound.storage.filesystem.root')
+        );
+    }
+
+    /**
+     * Create a database storage instance.
+     */
+    protected function createDatabaseStorage(): DatabaseStorage
+    {
+        return new DatabaseStorage(
+            database: $this->app->make('db'),
+            connection: $this->app->make('config')->get('foxhound.storage.database.connection')
         );
     }
 }

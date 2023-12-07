@@ -4,6 +4,7 @@ namespace Foxhound;
 
 use Illuminate\Support\Str;
 use Foxhound\Channels\Channel;
+use Foxhound\Contracts\Storage;
 use Illuminate\Support\Manager;
 
 /**
@@ -32,7 +33,7 @@ class ChannelManager extends Manager
      */
     public function createMailDriver(): Channels\Mail
     {
-        $channel = $this->createChannelDriver('mail', Channels\Mail::class);
+        $channel = $this->createChannelDriver(Channels\Mail::class);
 
         foreach (['from', 'to', 'reply_to'] as $key) {
             $address = $this->container['config']["mail.{$key}"] ?? null;
@@ -50,18 +51,16 @@ class ChannelManager extends Manager
      */
     public function createVonageDriver(): Channels\Vonage
     {
-        return $this->createChannelDriver('vonage', Channels\Vonage::class);
+        return $this->createChannelDriver(Channels\Vonage::class);
     }
 
     /**
      * Create a new channel driver.
      */
-    protected function createChannelDriver(string $key, string $class): Channel
+    protected function createChannelDriver(string $class): Channel
     {
         return new $class(
-            filesystem: $this->container['filesystem']->disk(),
-            key: $key,
-            rootStorageDirectory: 'foxhound',
+            storage: $this->container[Storage::class],
         );
     }
 }

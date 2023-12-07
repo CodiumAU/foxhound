@@ -2,20 +2,16 @@
 
 namespace Foxhound\Channels;
 
-use Foxhound\Number;
+use Foxhound\Data;
 use RuntimeException;
 use Foxhound\Manifest;
-use Foxhound\ChannelType;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Str;
-use Foxhound\AttachmentType;
+use Foxhound\Support\Number;
 use Illuminate\Mail\Mailable;
-use Foxhound\Data\ChannelData;
-use Foxhound\Data\MessageData;
-use Foxhound\Data\AttachmentData;
-use Foxhound\Data\MailMessageData;
+use Foxhound\Support\ChannelType;
 use Illuminate\Support\Facades\URL;
-use Foxhound\Data\MessageRecipientData;
+use Foxhound\Support\AttachmentType;
 use Illuminate\Support\Facades\Response;
 use Illuminate\Http\Response as HttpResponse;
 use Illuminate\Notifications\Messages\MailMessage;
@@ -48,9 +44,10 @@ class Mail extends Channel
         /** @var \Illuminate\Notifications\Messages\MailMessage|\Illuminate\Mail\Mailable */
         $mail = $event->notification->toMail($event->notifiable);
 
-        // Generate and store the rendered mail.
-        $this->store("{$manifest->uuid}/index.html", $this->forceBlankBaseTarget($mail->render()));
+        // Set the HTML on the manifest by rendering the mail.
+        $manifest->html = $this->forceBlankBaseTarget($mail->render());
 
+        // Store relevant mail data.
         $manifest->data('subject', $this->subject($event, $mail));
         $manifest->data('from', $this->from($event, $mail));
         $manifest->data('replyTo', $this->replyTo($event, $mail));
@@ -59,24 +56,20 @@ class Mail extends Channel
         $manifest->data('bcc', $this->normalizeAddresses($mail->bcc));
 
         // Store mail attachments.
-        $this->directory("{$manifest->uuid}/attachments");
         $attachments = [];
 
         /** @var array $attachment */
         foreach ($mail->attachments as $attachment) {
             $uuid = Str::uuid();
-
+            $data = file_get_contents($attachment['file']);
             $fileName = $attachment['options']['as'] ?? basename($attachment['file']);
 
-            $this->store(
-                "{$manifest->uuid}/attachments/{$uuid}",
-                file_get_contents($attachment['file'])
-            );
-
-            $attachments[(string) $uuid] = [
+            $attachments[(string) $uuid] = Data\Storage\AttachmentData::from([
                 'name' => $fileName,
                 'mime' => $attachment['options']['mime'] ?? null,
-            ];
+                'bytes' => mb_strlen($data),
+                'data' => $data,
+            ]);
         }
 
         /** @var array $attachment */
@@ -87,41 +80,40 @@ class Mail extends Channel
 
             $uuid = Str::uuid();
 
-            $this->store(
-                "{$manifest->uuid}/attachments/{$uuid}",
-                $attachment['data']
-            );
-
-            $attachments[(string) $uuid] = [
+            $attachments[(string) $uuid] = Data\Storage\AttachmentData::from([
                 'name' => $attachment['name'],
                 'mime' => $attachment['options']['mime'] ?? null,
-            ];
+                'bytes' => mb_strlen($attachment['data']),
+                'data' => $attachment['data'],
+            ]);
         }
 
-        $manifest->data('attachments', $attachments);
+        $manifest->attachments = $attachments;
+
+        $this->storage->saveManifest($manifest);
     }
 
     /**
      * {@inheritDoc}
      */
-    public function buildMessageData(Manifest $manifest): MessageData
+    public function buildMessageData(Manifest $manifest): Data\Response\MessageData
     {
-        return MessageData::from([
+        return Data\Response\MessageData::from([
             'uuid' => $manifest->uuid,
             'unread' => $manifest->unread,
             'hasAttachments' => !empty($manifest->data['attachments']),
             'subject' => $manifest->data['subject'],
             'recipients' => array_map(
-                callback: fn (array $data) => MessageRecipientData::from($data),
+                callback: fn (array $data) => Data\Response\MessageRecipientData::from($data),
                 array: $manifest->data['to']
             ),
             'sentAt' => $manifest->sentAt,
-            'data' => MailMessageData::from([
+            'attachments' => $this->buildAttachmentsData($manifest),
+            'data' => Data\Response\MailMessageData::from([
                 'cc' => $manifest->data['cc'],
                 'bcc' => $manifest->data['bcc'],
                 'replyTo' => $manifest->data['replyTo'],
                 'from' => $manifest->data['from'],
-                'attachments' => $this->buildAttachmentsData($manifest),
             ])
         ]);
     }
@@ -199,7 +191,7 @@ class Mail extends Channel
      */
     public function response(Manifest $manifest): HttpResponse
     {
-        return Response::make($this->filesystem->get($this->path("{$manifest->uuid}/index.html")), 200, [
+        return Response::make($manifest->html, 200, [
             'Content-Type' => 'text/html',
         ]);
     }
@@ -239,16 +231,16 @@ class Mail extends Channel
      */
     public function buildAttachmentsData(Manifest $manifest): array
     {
-        return collect($manifest->data['attachments'])
-            ->map(fn (array $data, $uuid) => AttachmentData::from([
-                'name' => $data['name'],
-                'type' => AttachmentType::fromExtension(Str::afterLast($data['name'], '.')),
+        return collect($manifest->attachments)
+            ->map(fn (Data\Storage\AttachmentData $data, $uuid) => Data\Response\AttachmentData::from([
+                'name' => $data->name,
+                'type' => AttachmentType::fromExtension(Str::afterLast($data->name, '.')),
                 'size' => Number::fileSize(
-                    bytes: $this->filesystem->size($this->path("{$manifest->uuid}/attachments/{$uuid}")),
+                    bytes: $data->bytes,
                     precision: 2
                 ),
                 'url' => URL::route('foxhound::attachment', [
-                    'channel' => $this->key,
+                    'channel' => $this->key(),
                     'message' => $manifest->uuid,
                     'attachment' => $uuid,
                 ]),
@@ -260,13 +252,13 @@ class Mail extends Channel
     /**
      * {@inheritDoc}
      */
-    public function data(): ChannelData
+    public function data(): Data\Response\ChannelData
     {
-        return ChannelData::from([
-            'key' => $this->key,
+        return Data\Response\ChannelData::from([
+            'key' => $this->key(),
             'name' => 'Mail',
             'type' => ChannelType::Mail,
-            'unreadMessagesCount' => $this->unreadMessagesCount(),
+            'unreadMessagesCount' => $this->storage->getUnreadMessagesCount($this),
         ]);
     }
 

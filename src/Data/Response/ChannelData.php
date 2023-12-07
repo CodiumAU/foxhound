@@ -1,20 +1,20 @@
 <?php
 
-namespace Foxhound\Data;
+namespace Foxhound\Data\Response;
 
-use Foxhound\AttachmentType;
 use Spatie\LaravelData\Data;
+use Foxhound\Support\ChannelType;
 use Spatie\LaravelData\Casts\EnumCast;
 use Spatie\LaravelData\Attributes\WithCast;
 
-class AttachmentData extends Data
+class ChannelData extends Data
 {
     public function __construct(
+        public string $key,
         public string $name,
-        public string $size,
-        public string $url,
         #[WithCast(EnumCast::class)]
-        public AttachmentType $type
+        public ChannelType $type,
+        public int $unreadMessagesCount
     ) {
     }
 }

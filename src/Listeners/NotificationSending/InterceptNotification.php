@@ -7,7 +7,7 @@ use Carbon\CarbonImmutable;
 use Illuminate\Support\Str;
 use Foxhound\ChannelManager;
 use InvalidArgumentException;
-use Illuminate\Contracts\Filesystem\Filesystem;
+use Foxhound\Contracts\Storage;
 use Illuminate\Notifications\Events\NotificationSending;
 use Illuminate\Contracts\Config\Repository as ConfigRepository;
 
@@ -19,7 +19,7 @@ class InterceptNotification
     public function __construct(
         protected ChannelManager $manager,
         protected ConfigRepository $config,
-        protected Filesystem $filesystem
+        protected Storage $storage
     ) {
     }
 
@@ -36,7 +36,7 @@ class InterceptNotification
         try {
             $channel = $this->manager->channel($event->channel);
             $manifest = new Manifest(
-                channel: $channel,
+                channel: $channel->key(),
                 uuid: Str::orderedUuid(),
                 sentAt: CarbonImmutable::now(),
                 event: $event,
@@ -46,7 +46,7 @@ class InterceptNotification
             $channel->intercept($event, $manifest);
 
             // Save the manifest after the driver has run any additional logic for the interception.
-            $manifest->save();
+            $this->storage->saveManifest($manifest);
 
             return false;
         } catch (InvalidArgumentException) {

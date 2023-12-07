@@ -1,6 +1,6 @@
 <?php
 
-namespace Foxhound\Data;
+namespace Foxhound\Data\Response;
 
 use Spatie\LaravelData\Data;
 

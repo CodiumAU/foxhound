@@ -33,6 +33,9 @@ class InstallCommand extends Command
         $this->comment('Publishing Foxhound Configuration...');
         $this->callSilent('vendor:publish', ['--tag' => 'foxhound-config']);
 
+        $this->comment('Publishing Foxhound Migrations...');
+        $this->callSilent('vendor:publish', ['--tag' => 'foxhound-migrations']);
+
         $this->info('Foxhound scaffolding installed successfully.');
     }
 }

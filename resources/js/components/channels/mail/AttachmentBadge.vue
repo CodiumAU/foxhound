@@ -37,14 +37,10 @@ import {
   DocumentIcon,
 } from '@heroicons/vue/24/outline'
 import { computed } from 'vue'
+import type { MessageListResource } from '../../../stores/channels'
 
 const props = defineProps<{
-  attachment: {
-    name: string
-    size: string
-    url: string
-    type: 'image' | 'video' | 'audio' | 'document' | 'other'
-  }
+  attachment: MessageListResource['attachments'][number]
 }>()
 
 const iconComponent = computed(() => {

@@ -2,12 +2,11 @@
 
 namespace Foxhound\Channels;
 
-use Exception;
+use Foxhound\Data;
 use Foxhound\Manifest;
+use Illuminate\Support\Str;
 use Illuminate\Http\Response;
-use Foxhound\Data\ChannelData;
-use Foxhound\Data\MessageData;
-use Illuminate\Contracts\Filesystem\Filesystem;
+use Foxhound\Contracts\Storage;
 use Illuminate\Notifications\Events\NotificationSending;
 
 abstract class Channel
@@ -16,110 +15,8 @@ abstract class Channel
      * Create a new channel instance.
      */
     public function __construct(
-        protected Filesystem $filesystem,
-        protected string $key,
-        protected string $rootStorageDirectory = 'foxhound'
+        protected Storage $storage
     ) {
-    }
-
-    /**
-     * Create a new directory.
-     */
-    public function directory(string $name): self
-    {
-        $this->filesystem->makeDirectory(
-            $this->path($name)
-        );
-
-        return $this;
-    }
-
-    /**
-     * Store a new file.
-     */
-    public function store(string $name, string $contents): self
-    {
-        $this->filesystem->put(
-            $this->path($name),
-            $contents,
-        );
-
-        return $this;
-    }
-
-    /**
-     * Get the contents of a file.
-     */
-    public function file(string $name): string
-    {
-        return $this->filesystem->get($this->path($name));
-    }
-
-    /**
-     * Resolve a manifest by its UUID.
-     */
-    public function buildManifest(string $uuid): ?Manifest
-    {
-        $manifest = $this->filesystem->get($this->path("{$uuid}/manifest.json"));
-
-        if ($manifest) {
-            try {
-                return Manifest::parse($this, $manifest);
-            } catch (Exception) {
-                // If the manifest file exists, but is invalid, we'll do nothing and just delete the directory instead. This can
-                // happen if the manifest file contains a notification that is no longer valid or contains models that no longer
-                // exist in the database.
-            }
-        }
-
-        if ($this->filesystem->exists($directory = $this->path($uuid))) {
-            // If the manifest file does not exist, but the directory does, delete the directory.
-            $this->filesystem->deleteDirectory($directory);
-        }
-
-        return null;
-    }
-
-    /**
-     * Get a relative path for the channel.
-     */
-    public function path(string $path = null): string
-    {
-        return "{$this->rootStorageDirectory}/{$this->key}/{$path}";
-    }
-
-    /**
-     * Get all messages for a channel.
-     */
-    public function messages(): array
-    {
-        $messages = [];
-
-        foreach ($this->filesystem->directories($this->path()) as $path) {
-            if ($manifest = $this->buildManifest(basename($path))) {
-                $messages[] = $this->buildMessageData($manifest);
-            }
-        }
-
-        usort($messages, fn ($a, $b) => $b->sentAt <=> $a->sentAt);
-
-        return array_values($messages);
-    }
-
-    /**
-     * Delete the messages for a channel.
-     */
-    public function deleteMessages(): void
-    {
-        $this->filesystem->deleteDirectory($this->path());
-    }
-
-    /**
-     * Get a count of unread messages for the channel.
-     */
-    protected function unreadMessagesCount(): int
-    {
-        return array_reduce($this->messages(), fn ($count, MessageData $message) => $count + ($message->unread ? 1 : 0), 0);
     }
 
     /**
@@ -135,10 +32,18 @@ abstract class Channel
     /**
      * Get the channel data.
      */
-    abstract public function data(): ChannelData;
+    abstract public function data(): Data\Response\ChannelData;
 
     /**
      * Build the message data from a manifest.
      */
-    abstract public function buildMessageData(Manifest $manifest): MessageData;
+    abstract public function buildMessageData(Manifest $manifest): Data\Response\MessageData;
+
+    /**
+     * Get the unique key for the channel.
+     */
+    public function key(): string
+    {
+        return Str::snake(class_basename($this));
+    }
 }

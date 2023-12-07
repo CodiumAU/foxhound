@@ -27,7 +27,7 @@
           </span>
 
           <PaperClipIcon
-            v-if="message.has_attachments"
+            v-if="message.attachments.length > 0"
             class="ms-auto shrink-0 w-4 h-4"
           />
         </div>

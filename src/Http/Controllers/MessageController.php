@@ -3,6 +3,7 @@
 namespace Foxhound\Http\Controllers;
 
 use Foxhound\ChannelManager;
+use Foxhound\Contracts\Storage;
 use Illuminate\Routing\Controller;
 use Illuminate\Filesystem\Filesystem;
 use Illuminate\Support\Facades\Response;
@@ -15,23 +16,24 @@ class MessageController extends Controller
     /**
      * Get a list of messages for a given channel.
      */
-    public function index(ChannelManager $manager, Filesystem $filesystem, string $channel): ResourceCollection
+    public function index(ChannelManager $manager, Storage $storage, string $channel): ResourceCollection
     {
         $channel = $manager->driver($channel);
 
-        return MessageListResource::collection($channel->messages());
+        return MessageListResource::collection($storage->getMessages($channel));
     }
 
     /**
      * Get the HTML markup for a given message and channel.
      */
-    public function show(ChannelManager $manager, string $channel, string $uuid): HttpResponse
+    public function show(ChannelManager $manager, Storage $storage, string $channel, string $uuid): HttpResponse
     {
         $channel = $manager->driver($channel);
 
-        if ($manifest = $channel->buildManifest($uuid)) {
+        if ($manifest = $storage->getManifest($channel, $uuid)) {
             $manifest->markAsRead();
-            $manifest->save();
+
+            $storage->saveManifest($manifest);
 
             return $channel->response($manifest);
         }
@@ -42,11 +44,11 @@ class MessageController extends Controller
     /**
      * Delete all messages for a given channel.
      */
-    public function destroy(ChannelManager $manager, Filesystem $filesystem, string $channel): HttpResponse
+    public function destroy(ChannelManager $manager, Storage $storage, string $channel): HttpResponse
     {
         $channel = $manager->driver($channel);
 
-        $channel->deleteMessages();
+        $storage->deleteMessages($channel);
 
         return Response::noContent();
     }

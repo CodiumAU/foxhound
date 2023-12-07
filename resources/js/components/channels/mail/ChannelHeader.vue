@@ -44,11 +44,11 @@
       </div>
     </li>
     <li
-      v-if="message.data.attachments.length > 0"
+      v-if="message.attachments.length > 0"
       class="inline-flex items-center gap-x-2 py-3 px-4 text-sm border text-gray-800 -mt-px first:rounded-t-lg first:mt-0 last:rounded-b-lg bg-white dark:bg-gray-800 dark:border-gray-700 dark:text-gray-200"
     >
       <AttachmentBadge
-        v-for="(attachment, index) in message.data.attachments"
+        v-for="(attachment, index) in message.attachments"
         :key="`attachment-${index}`"
         v-bind="{ attachment }"
       />

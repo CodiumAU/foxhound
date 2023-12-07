@@ -1,6 +1,6 @@
 <?php
 
-namespace Foxhound;
+namespace Foxhound\Support;
 
 use NumberFormatter;
 

@@ -4,7 +4,6 @@ namespace Foxhound;
 
 use JsonSerializable;
 use Carbon\CarbonImmutable;
-use Foxhound\Channels\Channel;
 use Illuminate\Contracts\Support\Arrayable;
 use Illuminate\Notifications\Events\NotificationSending;
 
@@ -14,27 +13,15 @@ class Manifest implements JsonSerializable, Arrayable
      * Create a new manfiest instance.
      */
     public function __construct(
-        public Channel $channel,
+        public string $channel,
         public string $uuid,
         public CarbonImmutable $sentAt,
         public NotificationSending $event,
+        public ?string $html = null,
         public bool $unread = true,
+        public array $attachments = [],
         public array $data = [],
     ) {
-        $channel->directory($uuid);
-    }
-
-    /**
-     * Save the manifest.
-     */
-    public function save(): self
-    {
-        $this->channel->store(
-            "{$this->uuid}/manifest.json",
-            json_encode($this),
-        );
-
-        return $this;
     }
 
     /**
@@ -61,10 +48,13 @@ class Manifest implements JsonSerializable, Arrayable
     public function toArray(): array
     {
         return [
+            'channel' => $this->channel,
             'uuid' => $this->uuid,
             'event' => serialize($this->event),
             'sentAt' => $this->sentAt->toIso8601String(),
             'unread' => $this->unread,
+            'html' => base64_encode($this->html),
+            'attachments' => serialize($this->attachments),
             'data' => $this->data,
         ];
     }
@@ -82,15 +72,17 @@ class Manifest implements JsonSerializable, Arrayable
     /**
      * Parse a manifest file into a manifest instance.
      */
-    public static function parse(Channel $channel, string $manifest): self
+    public static function fromJson(string $manifest): self
     {
         $manifest = json_decode($manifest, true);
 
         return new self(
-            channel: $channel,
+            channel: $manifest['channel'],
             uuid: $manifest['uuid'],
             sentAt: CarbonImmutable::parse($manifest['sentAt']),
             event: unserialize($manifest['event']),
+            html: base64_decode($manifest['html']),
+            attachments: unserialize($manifest['attachments']),
             unread: $manifest['unread'],
             data: $manifest['data'],
         );

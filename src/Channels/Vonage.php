@@ -2,13 +2,10 @@
 
 namespace Foxhound\Channels;
 
+use Foxhound\Data;
 use RuntimeException;
 use Foxhound\Manifest;
-use Foxhound\ChannelType;
-use Foxhound\Data\ChannelData;
-use Foxhound\Data\MessageData;
-use Foxhound\Data\SmsMessageData;
-use Foxhound\Data\MessageRecipientData;
+use Foxhound\Support\ChannelType;
 use Illuminate\Support\Facades\Response;
 use Illuminate\Http\Response as HttpResponse;
 use Illuminate\Notifications\Events\NotificationSending;
@@ -33,19 +30,19 @@ class Vonage extends Channel
     /**
      * {@inheritDoc}
      */
-    public function buildMessageData(Manifest $manifest): MessageData
+    public function buildMessageData(Manifest $manifest): Data\Response\MessageData
     {
-        return MessageData::from([
+        return Data\Response\MessageData::from([
             'uuid' => $manifest->uuid,
             'unread' => $manifest->unread,
-            'hasAttachments' => false,
             'subject' => $manifest->data['message'],
             'recipients' => [
-                MessageRecipientData::from(['address' => $manifest->data['to']])
+                Data\Response\MessageRecipientData::from(['address' => $manifest->data['to']])
             ],
             'from' => $manifest->data['from'],
             'sentAt' => $manifest->sentAt,
-            'data' => new SmsMessageData,
+            'data' => new Data\Response\SmsMessageData,
+            'attachments' => [],
         ]);
     }
 
@@ -60,13 +57,13 @@ class Vonage extends Channel
     /**
      * {@inheritDoc}
      */
-    public function data(): ChannelData
+    public function data(): Data\Response\ChannelData
     {
-        return ChannelData::from([
-            'key' => $this->key,
+        return Data\Response\ChannelData::from([
+            'key' => $this->key(),
             'name' => 'Vonage',
             'type' => ChannelType::Sms,
-            'unreadMessagesCount' => $this->unreadMessagesCount(),
+            'unreadMessagesCount' => $this->storage->getUnreadMessagesCount($this),
         ]);
     }
 }
