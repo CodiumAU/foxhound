@@ -28,7 +28,7 @@ class InstallCommand extends Command
     public function handle()
     {
         $this->comment('Publishing Foxhound Assets...');
-        $this->callSilent('vendor:publish', ['--tag' => 'foxhound-assets']);
+        $this->callSilent('vendor:publish', ['--tag' => 'foxhound-assets', '--force' => true]);
 
         $this->comment('Publishing Foxhound Configuration...');
         $this->callSilent('vendor:publish', ['--tag' => 'foxhound-config']);
