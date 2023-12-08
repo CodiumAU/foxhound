@@ -57,6 +57,21 @@ return [
             'disk' => env('FOXHOUND_STORAGE_DISK', 'local'),
             'root' => 'foxhound',
         ]
-    ]
+    ],
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | Foxhound Route Middleware
+    |--------------------------------------------------------------------------
+    |
+    | Middleware that will be applied to all Foxhound routes.
+    |
+    */
+
+    'middleware' => [
+        'web',
+        \Foxhound\Http\Middleware\Authorize::class,
+    ],
 
 ];

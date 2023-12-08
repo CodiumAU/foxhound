@@ -7,6 +7,8 @@ use Foxhound\Storage\DatabaseStorage;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Route;
 use Foxhound\Storage\FilesystemStorage;
+use Illuminate\Contracts\Auth\Access\Gate;
+use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Notifications\Events\NotificationSending;
 use Illuminate\Support\ServiceProvider as BaseServiceProvider;
 
@@ -48,9 +50,23 @@ class ServiceProvider extends BaseServiceProvider
             return;
         }
 
+        $this->bootAuthorization();
         $this->bootViews();
         $this->bootRoutes();
         $this->bootEventListeners();
+    }
+
+    /**
+     * Boot the Foxhound authorization.
+     */
+    protected function bootAuthorization(): void
+    {
+        $this->callAfterResolving(Gate::class, function (Gate $gate, Application $app) {
+            $gate->define(
+                ability: 'viewFoxhound',
+                callback: fn ($user = null) => in_array($app->environment(), $app->make('config')->get('foxhound.environments'))
+            );
+        });
     }
 
     /**
@@ -74,11 +90,13 @@ class ServiceProvider extends BaseServiceProvider
      */
     protected function bootRoutes(): void
     {
-        // Group and load the API routes.
-        Route::prefix('foxhound/api')->group(fn () => $this->loadRoutesFrom(FOXHOUND_PATH.'/routes/api.php'));
+        Route::group(['middleware' => $this->app->make('config')->get('foxhound.middleware')], function () {
+            // Group and load the API routes.
+            Route::prefix('foxhound/api')->group(fn () => $this->loadRoutesFrom(FOXHOUND_PATH.'/routes/api.php'));
 
-        // Define the global Foxhound route for the SPA.
-        Route::view('foxhound/{path?}', 'foxhound::index')->where('path', '.*');
+            // Define the global Foxhound route for the SPA.
+            Route::view('foxhound/{path?}', 'foxhound::index')->where('path', '.*');
+        });
     }
 
     /**
