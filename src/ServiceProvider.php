@@ -28,7 +28,7 @@ class ServiceProvider extends BaseServiceProvider
             key: 'foxhound'
         );
 
-        if ($this->disabled()) {
+        if (!Foxhound::enabled()) {
             return;
         }
 
@@ -46,7 +46,7 @@ class ServiceProvider extends BaseServiceProvider
         $this->bootCommands();
         $this->bootPublishing();
 
-        if ($this->disabled()) {
+        if (!Foxhound::enabled()) {
             return;
         }
 
@@ -136,14 +136,6 @@ class ServiceProvider extends BaseServiceProvider
             paths: [FOXHOUND_PATH.'/database/migrations' => database_path('migrations')],
             groups: 'foxhound-migrations'
         );
-    }
-
-    /**
-     * Determine if Foxhound is disabled.
-     */
-    protected function disabled(): bool
-    {
-        return !$this->app->make('config')->get('foxhound.enabled') || !in_array($this->app->environment(), $this->app->make('config')->get('foxhound.environments'));
     }
 
     /**
