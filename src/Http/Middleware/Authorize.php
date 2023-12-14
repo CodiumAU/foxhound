@@ -4,6 +4,7 @@ namespace Foxhound\Http\Middleware;
 
 use Closure;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Response;
 use Illuminate\Contracts\Auth\Access\Gate;
 
 class Authorize
@@ -21,7 +22,9 @@ class Authorize
      */
     public function handle(Request $request, Closure $next): mixed
     {
-        $this->gate->authorize('viewFoxhound');
+        if ($this->gate->denies('viewFoxhound')) {
+            return Response::view('foxhound::unauthorized', [], 403);
+        }
 
         return $next($request);
     }
