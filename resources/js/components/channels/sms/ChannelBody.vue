@@ -1,6 +1,6 @@
 <template>
   <div
-    class="grow rounded-lg rounded-t-none h-full w-full border border-t-0 dark:bg-gray-800 border-gray-200 dark:border-gray-700 bg-white overflow-hidden"
+    class="grow rounded-lg h-full w-full border dark:bg-gray-800 border-gray-200 dark:border-gray-700 bg-white overflow-hidden"
   >
     <ChannelBodyIframe
       v-if="uuid !== undefined && uuid !== ''"
