@@ -1,7 +1,7 @@
 <template>
   <div
     id="channel-sidebar"
-    class="hs-overlay hs-overlay-open:translate-x-0 -translate-x-full transition-transform duration-300 transform hidden fixed top-0 start-0 xl:start-64 bottom-0 z-[60] w-96 bg-white border-e border-gray-200 pt-7 pb-10 overflow-y-auto xl:block xl:translate-x-0 xl:end-auto xl:bottom-0 [&::-webkit-scrollbar]:w-2 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-track]:bg-gray-100 [&::-webkit-scrollbar-thumb]:bg-gray-300 dark:[&::-webkit-scrollbar-track]:bg-slate-700 dark:[&::-webkit-scrollbar-thumb]:bg-slate-500 dark:bg-gray-800 dark:border-gray-700"
+    class="hs-overlay hs-overlay-open:translate-x-0 -translate-x-full transition-transform duration-300 transform hidden fixed top-0 xl:top-16 start-0 xl:start-64 bottom-0 z-[60] w-96 bg-white border-e border-gray-200 pt-7 pb-10 overflow-y-auto xl:block xl:translate-x-0 xl:end-auto xl:bottom-0 [&::-webkit-scrollbar]:w-2 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-track]:bg-gray-100 [&::-webkit-scrollbar-thumb]:bg-gray-300 dark:[&::-webkit-scrollbar-track]:bg-slate-700 dark:[&::-webkit-scrollbar-thumb]:bg-slate-500 dark:bg-gray-800 dark:border-gray-700"
   >
     <nav class="p-3 pt-0 w-full flex flex-col">
       <div class="flex flex-row gap-1.5">
