@@ -67,7 +67,7 @@ class DatabaseStorage implements Storage
                     'data' => json_encode($manifest->data),
                 ],
                 uniqueBy: 'uuid',
-                update: ['channel', 'event', 'unread', 'sent_at', 'html', 'attachments', 'data']
+                update: ['channel', 'unread', 'sent_at', 'html', 'attachments', 'data']
             );
 
         return $this;
