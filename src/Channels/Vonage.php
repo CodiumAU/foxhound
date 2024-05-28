@@ -7,6 +7,7 @@ use RuntimeException;
 use Foxhound\Manifest;
 use Foxhound\Support\ChannelType;
 use Illuminate\Support\Facades\Response;
+use Illuminate\Mail\Events\MessageSending;
 use Illuminate\Http\Response as HttpResponse;
 use Illuminate\Notifications\Events\NotificationSending;
 
@@ -15,8 +16,13 @@ class Vonage extends Channel
     /**
      * {@inheritDoc}
      */
-    public function intercept(NotificationSending $event, Manifest $manifest): void
+    public function intercept(NotificationSending | MessageSending $event, Manifest $manifest): void
     {
+        // Vonage can only be intercepted when sending a notification.
+        if (!($event instanceof NotificationSending)) {
+            return;
+        }
+
         throw_unless(method_exists($event->notification, 'toVonage'), new RuntimeException('Notification does not have a "toVonage" method.'));
 
         /** @var \Illuminate\Notifications\Messages\VonageMessage */

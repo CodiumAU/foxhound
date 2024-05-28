@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Route;
 use Foxhound\Storage\FilesystemStorage;
 use Illuminate\Contracts\Auth\Access\Gate;
+use Illuminate\Mail\Events\MessageSending;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Notifications\Events\NotificationSending;
 use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
@@ -84,6 +85,7 @@ class ServiceProvider extends BaseServiceProvider
     protected function bootEventListeners(): void
     {
         Event::listen(NotificationSending::class, Listeners\NotificationSending\InterceptNotification::class);
+        Event::listen(MessageSending::class, Listeners\MessageSending\InterceptMessage::class);
     }
 
     /**

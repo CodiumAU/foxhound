@@ -10,9 +10,12 @@ use Illuminate\Support\Str;
 use Foxhound\Support\Number;
 use Illuminate\Mail\Mailable;
 use Foxhound\Support\ChannelType;
+use Symfony\Component\Mime\Email;
 use Illuminate\Support\Facades\URL;
+use Symfony\Component\Mime\Address;
 use Foxhound\Support\AttachmentType;
 use Illuminate\Support\Facades\Response;
+use Illuminate\Mail\Events\MessageSending;
 use Illuminate\Http\Response as HttpResponse;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Events\NotificationSending;
@@ -37,58 +40,43 @@ class Mail extends Channel
     /**
      * {@inheritDoc}
      */
-    public function intercept(NotificationSending $event, Manifest $manifest): void
+    public function intercept(NotificationSending | MessageSending $event, Manifest $manifest): void
     {
-        throw_unless(method_exists($event->notification, 'toMail'), new RuntimeException('Notification does not have a "toMail" method.'));
+        if ($event instanceof NotificationSending) {
+            throw_unless(
+                condition: method_exists($event->notification, 'toMail'),
+                exception: new RuntimeException(sprintf('%s does not define a "toMail" method.', $event->notification::class))
+            );
+        }
 
-        /** @var \Illuminate\Notifications\Messages\MailMessage|\Illuminate\Mail\Mailable */
-        $mail = $event->notification->toMail($event->notifiable);
+        /** @var \Illuminate\Notifications\Messages\MailMessage|\Illuminate\Mail\Mailable|\Symfony\Component\Mime\Email */
+        $mail = match ($event::class) {
+            NotificationSending::class => $event->notification->toMail($event->notifiable),
+            MessageSending::class => $event->message,
+        };
 
         // Set the HTML on the manifest by rendering the mail.
-        $manifest->html = $this->forceBlankBaseTarget($mail->render());
+        $manifest->html = $this->forceBlankBaseTarget(match ($event::class) {
+            NotificationSending::class => $mail->render(),
+            MessageSending::class => $mail->getHtmlBody(),
+        });
 
         // Store relevant mail data.
         $manifest->data('subject', $this->subject($event, $mail));
         $manifest->data('from', $this->from($event, $mail));
         $manifest->data('replyTo', $this->replyTo($event, $mail));
         $manifest->data('to', $this->to($event, $mail));
-        $manifest->data('cc', $this->normalizeAddresses($mail->cc));
-        $manifest->data('bcc', $this->normalizeAddresses($mail->bcc));
+        $manifest->data('cc', match ($event::class) {
+            NotificationSending::class => $this->normalizeAddresses($mail->cc),
+            MessageSending::class => $this->normalizeSymfonyAddresses($mail->getCc()),
+        });
+        $manifest->data('bcc', match ($event::class) {
+            NotificationSending::class => $this->normalizeAddresses($mail->bcc),
+            MessageSending::class => $this->normalizeSymfonyAddresses($mail->getBcc()),
+        });
 
         // Store mail attachments.
-        $attachments = [];
-
-        /** @var array $attachment */
-        foreach ($mail->attachments as $attachment) {
-            $uuid = Str::uuid();
-            $data = file_get_contents($attachment['file']);
-            $fileName = $attachment['options']['as'] ?? basename($attachment['file']);
-
-            $attachments[(string) $uuid] = Data\Storage\AttachmentData::from([
-                'name' => $fileName,
-                'mime' => $attachment['options']['mime'] ?? null,
-                'bytes' => mb_strlen($data),
-                'data' => $data,
-            ]);
-        }
-
-        /** @var array $attachment */
-        foreach ($mail->rawAttachments as $attachment) {
-            if (!$attachment['data']) {
-                continue;
-            }
-
-            $uuid = Str::uuid();
-
-            $attachments[(string) $uuid] = Data\Storage\AttachmentData::from([
-                'name' => $attachment['name'],
-                'mime' => $attachment['options']['mime'] ?? null,
-                'bytes' => mb_strlen($attachment['data']),
-                'data' => $attachment['data'],
-            ]);
-        }
-
-        $manifest->attachments = $attachments;
+        $manifest->attachments = $this->attachments($event, $mail);
 
         $this->storage->saveManifest($manifest);
     }
@@ -119,25 +107,83 @@ class Mail extends Channel
     }
 
     /**
-     * Get the subject for the mail message.
+     * Get the attachments for the mail message.
      */
-    protected function subject(NotificationSending $event, Mailable | MailMessage $mail): string
+    protected function attachments(NotificationSending | MessageSending $event, Mailable | MailMessage | Email $mail): array
     {
-        if (isset($mail->subject)) {
-            return $mail->subject;
+        $attachments = [];
+
+        if ($mail instanceof Email) {
+            /** @var \Symfony\Component\Mime\Part\DataPart $attachment */
+            foreach ($mail->getAttachments() as $attachment) {
+                $uuid = Str::uuid();
+                $data = $attachment->getBody();
+                $fileName = $attachment->getFilename();
+
+                $attachments[(string) $uuid] = Data\Storage\AttachmentData::from([
+                    'name' => $fileName,
+                    'mime' => $attachment->getContentType() ?? null,
+                    'bytes' => mb_strlen($data),
+                    'data' => $data,
+                ]);
+            }
+        } else {
+            /** @var array $attachment */
+            foreach ($mail->attachments as $attachment) {
+                $uuid = Str::uuid();
+                $data = file_get_contents($attachment['file']);
+                $fileName = $attachment['options']['as'] ?? basename($attachment['file']);
+
+                $attachments[(string) $uuid] = Data\Storage\AttachmentData::from([
+                    'name' => $fileName,
+                    'mime' => $attachment['options']['mime'] ?? null,
+                    'bytes' => mb_strlen($data),
+                    'data' => $data,
+                ]);
+            }
+
+            /** @var array $attachment */
+            foreach ($mail->rawAttachments as $attachment) {
+                if (!$attachment['data']) {
+                    continue;
+                }
+
+                $uuid = Str::uuid();
+
+                $attachments[(string) $uuid] = Data\Storage\AttachmentData::from([
+                    'name' => $attachment['name'],
+                    'mime' => $attachment['options']['mime'] ?? null,
+                    'bytes' => mb_strlen($attachment['data']),
+                    'data' => $attachment['data'],
+                ]);
+            }
         }
 
-        return Str::headline(class_basename($event->notification));
+        return $attachments;
+    }
+
+    /**
+     * Get the subject for the mail message.
+     */
+    protected function subject(NotificationSending | MessageSending $event, Mailable | MailMessage | Email $mail): string
+    {
+        return match ($event::class) {
+            NotificationSending::class => $mail->subject ?? Str::headline(class_basename($event->notification)),
+            MessageSending::class => $mail->getSubject(),
+        };
     }
 
     /**
      * Get the "to" addresses for the mail message.
      */
-    protected function to(NotificationSending $event, Mailable | MailMessage $mail): array
+    protected function to(NotificationSending | MessageSending $event, Mailable | MailMessage | Email $mail): array
     {
-        $to = $mail instanceof Mailable ? $mail->to : [
-            ['name' => null, 'address' => $event->notifiable->routeNotificationFor('mail')]
-        ];
+        $to = match ($event::class) {
+            NotificationSending::class => $mail instanceof Mailable ? $mail->to : [
+                ['name' => null, 'address' => $event->notifiable->routeNotificationFor('mail')]
+            ],
+            MessageSending::class => $this->normalizeSymfonyAddresses($mail->getTo()),
+        };
 
         if (isset($this->alwaysTo)) {
             $to[] = $this->alwaysTo;
@@ -149,9 +195,11 @@ class Mail extends Channel
     /**
      * Get the "from" addresses for the mail message.
      */
-    protected function from(NotificationSending $event, Mailable | MailMessage $mail): array
+    protected function from(NotificationSending | MessageSending $event, Mailable | MailMessage | Email $mail): array
     {
-        if (empty($mail->from)) {
+        if ($mail instanceof Email) {
+            return $this->normalizeSymfonyAddresses($mail->getFrom())[0] ?? [];
+        } elseif (empty($mail->from)) {
             return $this->alwaysFrom ?? [];
         }
 
@@ -167,8 +215,12 @@ class Mail extends Channel
     /**
      * Get the "reply to" addresses for the mail message.
      */
-    protected function replyTo(NotificationSending $event, Mailable | MailMessage $mail): array
+    protected function replyTo(NotificationSending | MessageSending $event, Mailable | MailMessage | Email $mail): array
     {
+        if ($mail instanceof Email) {
+            return $this->normalizeSymfonyAddresses($mail->getReplyTo());
+        }
+
         $replyTo = $mail->replyTo;
 
         if (isset($this->alwaysReplyTo)) {
@@ -247,6 +299,14 @@ class Mail extends Channel
             ]))
             ->values()
             ->toArray();
+    }
+
+    /**
+     * Normalize an array of Symfony addresses.
+     */
+    protected function normalizeSymfonyAddresses(array $addresses): array
+    {
+        return  array_map(fn (Address $address) => ['name' => $address->getName(), 'address' => $address->getAddress()], $addresses);
     }
 
     /**

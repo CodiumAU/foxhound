@@ -7,6 +7,7 @@ use Foxhound\Manifest;
 use Illuminate\Support\Str;
 use Illuminate\Http\Response;
 use Foxhound\Contracts\Storage;
+use Illuminate\Mail\Events\MessageSending;
 use Illuminate\Notifications\Events\NotificationSending;
 
 abstract class Channel
@@ -22,7 +23,7 @@ abstract class Channel
     /**
      * Intercept a notification event and build the manifest.
      */
-    abstract public function intercept(NotificationSending $event, Manifest $manifest): void;
+    abstract public function intercept(NotificationSending | MessageSending $event, Manifest $manifest): void;
 
     /**
      * Return the response of the stored notification from its manifest.
