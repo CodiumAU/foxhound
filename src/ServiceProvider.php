@@ -10,6 +10,7 @@ use Foxhound\Storage\FilesystemStorage;
 use Illuminate\Contracts\Auth\Access\Gate;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Notifications\Events\NotificationSending;
+use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
 use Illuminate\Support\ServiceProvider as BaseServiceProvider;
 
 class ServiceProvider extends BaseServiceProvider
@@ -90,13 +91,17 @@ class ServiceProvider extends BaseServiceProvider
      */
     protected function bootRoutes(): void
     {
-        Route::group(['middleware' => $this->app->make('config')->get('foxhound.middleware')], function () {
-            // Group and load the API routes.
-            Route::prefix('foxhound/api')->group(fn () => $this->loadRoutesFrom(FOXHOUND_PATH.'/routes/api.php'));
+        $config = $this->app->make('config');
 
-            // Define the global Foxhound route for the SPA.
-            Route::view('foxhound/{path?}', 'foxhound::index')->where('path', '.*');
-        });
+        Route::withoutMiddleware($config->get('foxhound.without_csrf_verification', false) ? [VerifyCsrfToken::class] : [])
+            ->middleware($config->get('foxhound.middleware'))
+            ->group(function () {
+                // Group and load the API routes.
+                Route::prefix('foxhound/api')->group(fn () => $this->loadRoutesFrom(FOXHOUND_PATH.'/routes/api.php'));
+
+                // Define the global Foxhound route for the SPA.
+                Route::view('foxhound/{path?}', 'foxhound::index')->where('path', '.*');
+            });
     }
 
     /**

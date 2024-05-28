@@ -74,4 +74,18 @@ return [
         \Foxhound\Http\Middleware\Authorize::class,
     ],
 
+    /*
+    |--------------------------------------------------------------------------
+    | Without CSRF Verification
+    |--------------------------------------------------------------------------
+    |
+    | If true then CSRF verification will be disabled for Foxhound routes.
+    |
+    | This may help resolve issues where CSRF tokens become mismatched due to
+    | Foxhound requests.
+    |
+    */
+
+    'without_csrf_verification' => false,
+
 ];
