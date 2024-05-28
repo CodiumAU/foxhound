@@ -38,8 +38,7 @@ class InterceptNotification
             $manifest = new Manifest(
                 channel: $channel->key(),
                 uuid: Str::orderedUuid(),
-                sentAt: CarbonImmutable::now(),
-                event: $event,
+                sentAt: CarbonImmutable::now()
             );
 
             // Intercept the notification.

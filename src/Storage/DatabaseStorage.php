@@ -60,7 +60,6 @@ class DatabaseStorage implements Storage
                 values: [
                     'uuid' => $manifest->uuid,
                     'channel' => $manifest->channel,
-                    'event' => serialize($manifest->event),
                     'unread' => $manifest->unread,
                     'sent_at' => $manifest->sentAt->toDateTimeString(),
                     'html' => base64_encode($manifest->html),
@@ -127,7 +126,6 @@ class DatabaseStorage implements Storage
         return new Manifest(
             uuid: $data->uuid,
             channel: $data->channel,
-            event: unserialize($data->event),
             unread: boolval($data->unread),
             sentAt: CarbonImmutable::parse($data->sent_at),
             html: base64_decode($data->html),

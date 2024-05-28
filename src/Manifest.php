@@ -5,7 +5,6 @@ namespace Foxhound;
 use JsonSerializable;
 use Carbon\CarbonImmutable;
 use Illuminate\Contracts\Support\Arrayable;
-use Illuminate\Notifications\Events\NotificationSending;
 
 class Manifest implements JsonSerializable, Arrayable
 {
@@ -16,7 +15,6 @@ class Manifest implements JsonSerializable, Arrayable
         public string $channel,
         public string $uuid,
         public CarbonImmutable $sentAt,
-        public NotificationSending $event,
         public ?string $html = null,
         public bool $unread = true,
         public array $attachments = [],
@@ -50,7 +48,6 @@ class Manifest implements JsonSerializable, Arrayable
         return [
             'channel' => $this->channel,
             'uuid' => $this->uuid,
-            'event' => serialize($this->event),
             'sentAt' => $this->sentAt->toIso8601String(),
             'unread' => $this->unread,
             'html' => base64_encode($this->html),
@@ -80,7 +77,6 @@ class Manifest implements JsonSerializable, Arrayable
             channel: $manifest['channel'],
             uuid: $manifest['uuid'],
             sentAt: CarbonImmutable::parse($manifest['sentAt']),
-            event: unserialize($manifest['event']),
             html: base64_decode($manifest['html']),
             attachments: unserialize($manifest['attachments']),
             unread: $manifest['unread'],
