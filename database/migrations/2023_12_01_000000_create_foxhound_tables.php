@@ -23,7 +23,6 @@ return new class extends Migration
         Schema::create('foxhound_manifests', function (Blueprint $table) {
             $table->uuid()->primary();
             $table->string('channel');
-            $table->binary('event');
             $table->boolean('unread')->default(true);
             $table->timestamp('sent_at');
             $table->binary('html');
