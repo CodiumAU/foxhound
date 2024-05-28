@@ -2,6 +2,7 @@
 
 namespace Foxhound\Storage;
 
+use Exception;
 use Foxhound\Manifest;
 use Carbon\CarbonImmutable;
 use Foxhound\Channels\Channel;
