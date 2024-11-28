@@ -11,11 +11,13 @@ use Foxhound\Support\Number;
 use Illuminate\Mail\Mailable;
 use Foxhound\Support\ChannelType;
 use Symfony\Component\Mime\Email;
+use Illuminate\Container\Container;
 use Illuminate\Support\Facades\URL;
 use Symfony\Component\Mime\Address;
 use Foxhound\Support\AttachmentType;
 use Illuminate\Support\Facades\Response;
 use Illuminate\Mail\Events\MessageSending;
+use Illuminate\Contracts\Config\Repository;
 use Illuminate\Http\Response as HttpResponse;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Events\NotificationSending;
@@ -42,6 +44,8 @@ class Mail extends Channel
      */
     public function intercept(NotificationSending | MessageSending $event, Manifest $manifest): void
     {
+        $this->ensureMailConfigIsSafe();
+
         if ($event instanceof NotificationSending) {
             throw_unless(
                 condition: method_exists($event->notification, 'toMail'),
@@ -328,5 +332,19 @@ class Mail extends Channel
     protected function forceBlankBaseTarget(string $html): string
     {
         return str_replace('<head>', '<head><base target="_blank">', $html);
+    }
+
+    /**
+     * Ensures the various mail configuration values are safe to avoid possible server errors.
+     */
+    protected function ensureMailConfigIsSafe(): void
+    {
+        $key = sprintf('mail.mailers.%s', Container::getInstance()->make('mail.manager')->getDefaultDriver());
+
+        Container::getInstance()->make('config')->set([
+            "{$key}.transport" => 'smtp',
+            "{$key}.host" => '',
+            "{$key}.port" => null,
+        ]);
     }
 }
