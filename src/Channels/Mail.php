@@ -343,6 +343,7 @@ class Mail extends Channel
 
         Container::getInstance()->make('config')->set([
             "{$key}.transport" => 'smtp',
+            "{$key}.scheme" => 'smtp',
             "{$key}.host" => '',
             "{$key}.port" => null,
         ]);
