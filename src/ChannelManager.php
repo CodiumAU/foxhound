@@ -53,6 +53,14 @@ class ChannelManager extends Manager
     {
         return $this->createChannelDriver(Channels\Vonage::class);
     }
+    
+    /**
+     * Create the message media channel driver.
+     */
+    public function createMessageMediaDriver(): Channels\MessageMedia
+    {
+        return $this->createChannelDriver(Channels\MessageMedia::class);
+    }
 
     /**
      * Create a new channel driver.
