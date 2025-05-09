@@ -8,7 +8,9 @@ use Illuminate\Support\Str;
 use Foxhound\ChannelManager;
 use InvalidArgumentException;
 use Foxhound\Contracts\Storage;
+use Illuminate\Mail\MailManager;
 use Illuminate\Mail\Events\MessageSending;
+use Illuminate\Mail\Transport\ArrayTransport;
 use Illuminate\Contracts\Config\Repository as ConfigRepository;
 
 class InterceptMessage
@@ -24,6 +26,7 @@ class InterceptMessage
     public function __construct(
         protected ChannelManager $manager,
         protected ConfigRepository $config,
+        protected MailManager $mailer,
         protected Storage $storage
     ) {
     }
@@ -31,11 +34,11 @@ class InterceptMessage
     /**
      * Handle the event.
      */
-    public function handle(MessageSending $event): bool
+    public function handle(MessageSending $event): void
     {
         // Do not intercept a mail sending if the "mail" channel is not configured.
         if (!in_array(static::$channel, $this->config->get('foxhound.channels', []))) {
-            return true;
+            return;
         }
 
         try {
@@ -52,9 +55,11 @@ class InterceptMessage
             // Save the manifest after the driver has run any additional logic for the interception.
             $this->storage->saveManifest($manifest);
 
-            return false;
+            // Set the transport on the mailer to the array transport. This prevents mail from being sent via the default
+            // transport but allows other event listeners to run as expected.
+            $this->mailer->setSymfonyTransport(new ArrayTransport);
         } catch (InvalidArgumentException) {
-            return true;
+            // Silently ignore invalid argument exceptions.
         }
     }
 }
